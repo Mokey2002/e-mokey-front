@@ -40,13 +40,13 @@ function App() {
    .get('http://127.0.0.1:8000/api/cart/')
    .then((res) => {
     //console.log(res.data[0]);
-    //console.log(res.data)
+    console.log(res.data)
     //setCart(res.data)
     //const listItems = res.data.map((cartdata) =>
       //<li key={cartdata.id}>{cartdata.id}</li> 
     //)
     //const listItems = []; links.forEach(function (link) { listItems.push(<li>${link.endpoint}</li>); }); 
-    const listItems = []; res.data.forEach(function (link) { listItems.push(<li>${link.id}</li>); }); 
+    const listItems = []; res.data.forEach(function (link) { listItems.push(<li style={{ display: 'flex', justifyContent: 'flex-end' }}> ${link.product_name}   <Button color="success">Delete  </Button> </li>); }); 
     console.log(listItems)
     setCart(listItems)
     console.log(userCart)

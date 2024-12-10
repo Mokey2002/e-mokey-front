@@ -46,7 +46,7 @@ function App() {
       //<li key={cartdata.id}>{cartdata.id}</li> 
     //)
     //const listItems = []; links.forEach(function (link) { listItems.push(<li>${link.endpoint}</li>); }); 
-    const listItems = []; res.data.forEach(function (link) { listItems.push(<li style={{ display: 'flex', justifyContent: 'flex-end' }}> ${link.product_name}   <Button color="success">Delete  </Button> </li>); }); 
+    const listItems = []; res.data.forEach(function (link) { listItems.push(<li key={link.id} style={{ display: 'flex', justifyContent: 'flex-end' }}> ${link.id}   <Button  onClick={() => handleDelete(link.id)} color="success">Delete  </Button> </li>); }); 
     console.log(listItems)
     setCart(listItems)
     console.log(userCart)
@@ -57,7 +57,26 @@ function App() {
 
   };
 
+  const handleDelete = (product_id) => {
+    // Perform your desired action here
+   // setModal(!modal);
 
+  axios
+   .delete('http://127.0.0.1:8000/api/delete_cart_product_id/'+product_id+'/')
+   .then((res) => {
+    //console.log(res.data[0]);
+    //console.log('TEST');
+    //console.log(product_id);
+    //console.log(res);
+    const listItems = []; res.data.forEach(function (link) { listItems.push(<li key={link.id} style={{ display: 'flex', justifyContent: 'flex-end' }}> ${link.id}   <Button  onClick={() => handleDelete(link.id)} color="success">Delete  </Button> </li>); }); 
+    //console.log(listItems)
+    setCart(listItems)
+    //console.log(userCart)
+
+   });
+   
+
+  };
 
 
   return (

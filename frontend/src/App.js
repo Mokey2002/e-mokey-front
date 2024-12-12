@@ -3,6 +3,7 @@ import Home from './Components/home'
 import Login from './Components/login'
 import Landing from './Components/landing'
 import Product from './Components/product'
+import Checkout from './Components/checkout'
 import './App.css'
 import { useEffect, useState } from 'react'
 import {
@@ -98,7 +99,7 @@ function App() {
             </NavItem>
             <NavItem>
               <NavLink href="https://github.com/reactstrap/reactstrap">
-                GitHub
+                Mokey
               </NavLink>
             </NavItem>
           </Nav>
@@ -113,6 +114,7 @@ function App() {
           <Route path="/login" element={<Login setLoggedIn={setLoggedIn} setEmail={setEmail} />} />
           <Route path="/landing" element={<Landing/>}/>
           <Route path="/product" element={<Product setCartIcon={setCartIcon}/>}/>
+          <Route path="/checkout" element={<Checkout setCartIcon={setCartIcon}/>}/>
         </Routes>
       </BrowserRouter>
       <Modal isOpen={modal} toggle={toggle}>

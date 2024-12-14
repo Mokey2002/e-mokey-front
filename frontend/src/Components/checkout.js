@@ -31,6 +31,7 @@ const Checkout = (props) => {
    //console.log(Pdata)
    
 }, []);
+let total=0;
 
  const onButtonClick = (test) => ()=>{
   
@@ -50,6 +51,7 @@ const Checkout = (props) => {
             const cols = [];
             for (let j = i; j < i + 4 && j < Pdata.length; j++) {
               const product = Pdata[j];
+              total = total+product.product_id;//testing total
               cols.push(
                 <Col className="bg-light border" key={product.id}>
                   <Card
@@ -70,6 +72,7 @@ const Checkout = (props) => {
                         Product ID: {product.product_id}
                       </CardText>
                       <CardFooter>
+                        
                         Price: {product.product_id} Qty: {product.product_id}
                       </CardFooter>
                     </CardBody>
@@ -93,12 +96,12 @@ console.log(Pdata);
       <div className={'titleContainer'}>
         <div>Checkout</div>
       </div>
-      <div>This is the checkout page.</div>
+      <div>Your total: {total} </div>
   
-  <Row>
+
 {result}
   
-  </Row>
+
       
       <Row>
  

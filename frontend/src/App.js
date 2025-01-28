@@ -4,6 +4,7 @@ import Login from './Components/login'
 import Landing from './Components/landing'
 import Product from './Components/product'
 import Checkout from './Components/checkout'
+import AddItem from './Components/additem'
 import './App.css'
 import { useEffect, useState } from 'react'
 import {
@@ -98,7 +99,7 @@ function App() {
               <NavLink href="/components/">Components</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink href="https://github.com/reactstrap/reactstrap">
+              <NavLink href="https://github.com/Mokey2002?tab=repositories">
                 Mokey
               </NavLink>
             </NavItem>
@@ -115,6 +116,7 @@ function App() {
           <Route path="/landing" element={<Landing/>}/>
           <Route path="/product" element={<Product setCartIcon={setCartIcon}/>}/>
           <Route path="/checkout" element={<Checkout setCartIcon={setCartIcon}/>}/>
+          <Route path="/additem" element={<AddItem/>}/>
         </Routes>
       </BrowserRouter>
       <Modal isOpen={modal} toggle={toggle}>

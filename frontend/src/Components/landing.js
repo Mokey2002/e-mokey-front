@@ -42,7 +42,7 @@ const Landing = () => {
         {Pdata.map((product) => (
           <Col key={product.id} sm="6" md="4" lg="3">
             <Card
-              onClick={onButtonClick(product.product_id)}
+              onClick={onButtonClick(product.id)}
               style={{
                 border: 'none',
                 borderRadius: '10px',

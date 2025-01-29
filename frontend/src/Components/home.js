@@ -2,9 +2,10 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
 const Home = (props) => {
+  
   const { loggedIn, email } = props
   const navigate = useNavigate()
-
+  navigate('/landing')
   const onButtonClick = () => {
     if (loggedIn) {
       localStorage.removeItem('user')

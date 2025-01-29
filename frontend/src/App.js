@@ -23,6 +23,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import {  Modal, ModalHeader, ModalBody, ModalFooter, ModalComponent,Button} from 'reactstrap';
 import axios from 'axios'; 
 
+
 function App() {
   const [loggedIn, setLoggedIn] = useState(false)
   const [email, setEmail] = useState(false)
@@ -100,6 +101,9 @@ function App() {
               <NavLink href="/components/">Components</NavLink>
             </NavItem>
             <NavItem>
+              <NavLink href='/login'>Login</NavLink>
+            </NavItem>
+            <NavItem>
               <NavLink href="https://github.com/Mokey2002?tab=repositories">
                 Mokey
               </NavLink>
@@ -109,15 +113,12 @@ function App() {
       </Navbar>
       <BrowserRouter>
         <Routes>
-          <Route
-            path="/"
-            element={<Home email={email} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />}
-          />
+          <Route path="/"element={<Landing/>}/>
           <Route path="/login" element={<Login setLoggedIn={setLoggedIn} setEmail={setEmail} />} />
           <Route path="/landing" element={<Landing/>}/>
           <Route path="/product" element={<Product setCartIcon={setCartIcon}/>}/>
           <Route path="/checkout" element={<Checkout setCartIcon={setCartIcon}/>}/>
-          <Route path="/additem" element={<AddItem/>}/>
+          <Route path="/additem" element={<AddItem loggedIn={loggedIn} setLoggedIn={setLoggedIn}/>}/>
           <Route path="/myItems" element={<MyItems/>}/>
         </Routes>
       </BrowserRouter>

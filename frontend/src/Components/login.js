@@ -38,7 +38,11 @@ const Login = (props) => {
     // Authentication calls will be made here...
 
         console.log(password,email)
-        fetch('http://localhost:8000/api/user/', {
+        localStorage.setItem('user', JSON.stringify({ email, token: 'testoken'}))
+        props.setLoggedIn(true)
+        props.setEmail(email)
+        navigate('/myItems')
+       /* fetch('http://localhost:8000/api/user/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -58,7 +62,7 @@ const Login = (props) => {
             } else {
               window.alert('Wrong email or password')
             }
-          })
+          })*/
       
   }
 

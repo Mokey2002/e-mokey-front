@@ -5,6 +5,7 @@ import Landing from './Components/landing'
 import Product from './Components/product'
 import Checkout from './Components/checkout'
 import AddItem from './Components/additem'
+import MyItems from './Components/myitems'
 import './App.css'
 import { useEffect, useState } from 'react'
 import {
@@ -117,6 +118,7 @@ function App() {
           <Route path="/product" element={<Product setCartIcon={setCartIcon}/>}/>
           <Route path="/checkout" element={<Checkout setCartIcon={setCartIcon}/>}/>
           <Route path="/additem" element={<AddItem/>}/>
+          <Route path="/myItems" element={<MyItems/>}/>
         </Routes>
       </BrowserRouter>
       <Modal isOpen={modal} toggle={toggle}>

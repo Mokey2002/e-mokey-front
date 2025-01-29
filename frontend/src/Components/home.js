@@ -19,7 +19,7 @@ const Home = (props) => {
       <div className={'titleContainer'}>
         <div>Welcome!</div>
       </div>
-      <div>This is the home page.</div>
+      <div>Mokey</div>
       <div className={'buttonContainer'}>
         <input
           className={'inputButton'}
@@ -29,6 +29,7 @@ const Home = (props) => {
         />
         {loggedIn ? <div>Your email address is {email}</div> : <div />}
       </div>
+      
     </div>
   )
 }

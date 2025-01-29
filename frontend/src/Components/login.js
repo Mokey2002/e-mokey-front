@@ -10,7 +10,10 @@ const Login = (props) => {
 
   const navigate = useNavigate()
 
-  
+  const onButtonGuestClick = () => {
+
+    navigate('/landing')
+  }
   const onButtonClick = () => {
     // Set initial error values to empty
     setEmailError('')
@@ -31,16 +34,11 @@ const Login = (props) => {
       setPasswordError('Please enter a password')
       return
     }
-  
-    if (password.length < 7) {
-      setPasswordError('The password must be 8 characters or longer')
-      return
-    }
     
     // Authentication calls will be made here...
 
         console.log(password,email)
-        fetch('http://localhost:8000/api/product/', {
+        fetch('http://localhost:8000/api/user/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -56,7 +54,7 @@ const Login = (props) => {
               localStorage.setItem('user', JSON.stringify({ email, token: 'testoken'}))
               props.setLoggedIn(true)
               props.setEmail(email)
-              navigate('/')
+              navigate('/landing')
             } else {
               window.alert('Wrong email or password')
             }
@@ -92,6 +90,9 @@ const Login = (props) => {
       <br />
       <div className={'inputContainer'}>
         <input className={'inputButton'} type="button" onClick={onButtonClick} value={'Log in'} />
+      </div>
+      <div className={'inputContainer'}>
+        <input className={'inputButton'} type="button" onClick={onButtonGuestClick} value={'Enter as a guest'} />
       </div>
     </div>
   )

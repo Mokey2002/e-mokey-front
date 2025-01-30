@@ -1,9 +1,9 @@
-import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Home from './Components/home';
 import Login from './Components/login';
 import Landing from './Components/landing';
 import Product from './Components/product';
-import Checkout from './Components/checkout';
+import Checkout from './Components/checkout';  // <-- Import the new Checkout page
 import AddItem from './Components/additem';
 import MyItems from './Components/myitems';
 import EditItems from './Components/editItems';
@@ -32,8 +32,6 @@ function App() {
   const [userCart, setCart] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
 
-  //const navigate = useNavigate(); // Required for logout redirection
-
   const toggle = () => setModal(!modal);
   const toggleNavbar = () => setCollapsed(!collapsed);
 
@@ -51,24 +49,35 @@ function App() {
     localStorage.removeItem('user'); // Clear user session
     setLoggedIn(false); // Reset state
     setEmail('');
-    //navigate('/login'); // Redirect to login page
+    // If you want to programmatically navigate, see notes below
+    // navigate('/login');
   };
 
+  // Open the cart modal and fetch cart data
   const handleClick = () => {
     setModal(!modal);
 
     axios
       .get('http://127.0.0.1:8000/api/cart/')
       .then((res) => {
-        console.log(res.data);
-
         let total = 0;
         const listItems = res.data.map((item) => {
           total += parseFloat(item.price) * item.quantity;
 
           return (
-            <li key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '5px 0' }}>
-              <span>{item.product_name} (x{item.quantity}) - ${item.price.toFixed(2)}</span>
+            <li
+              key={item.id}
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '5px 0'
+              }}
+            >
+              <span>
+                {item.product_name} (x{item.quantity}) - $
+                {item.price.toFixed(2)}
+              </span>
               <Button color="danger" size="sm" onClick={() => handleDelete(item.id)}>
                 Delete
               </Button>
@@ -82,19 +91,29 @@ function App() {
       .catch((err) => console.error('Error fetching cart data:', err));
   };
 
+  // Delete an item from the cart
   const handleDelete = (product_id) => {
     axios
       .delete(`http://127.0.0.1:8000/api/delete_cart_product_id/${product_id}/`)
       .then((res) => {
         console.log('Item deleted');
-
         let total = 0;
         const listItems = res.data.map((item) => {
           total += item.price * item.quantity;
-
           return (
-            <li key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '5px 0' }}>
-              <span>{item.product_name} (x{item.quantity}) - ${item.price.toFixed(2)}</span>
+            <li
+              key={item.id}
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '5px 0'
+              }}
+            >
+              <span>
+                {item.product_name} (x{item.quantity}) - $
+                {item.price.toFixed(2)}
+              </span>
               <Button color="danger" size="sm" onClick={() => handleDelete(item.id)}>
                 Delete
               </Button>
@@ -106,6 +125,18 @@ function App() {
         setTotalPrice(total);
       })
       .catch((err) => console.error('Error deleting product:', err));
+  };
+
+  // Navigate to Checkout on button click
+  // Because we're rendering <BrowserRouter> here, we'll do a simple approach:
+  //  - close the modal
+  //  - do window.location.href to jump to /checkout
+  // 
+  // If you want client-side navigation (without a full page refresh),
+  // see the "Alternate Approach" notes below.
+  const handleCheckoutClick = () => {
+    toggle();
+    window.location.href = '/checkout';
   };
 
   return (
@@ -155,6 +186,10 @@ function App() {
         </Collapse>
       </Navbar>
 
+      {/*
+        Wrap your routes in BrowserRouter.
+        Everything inside this BrowserRouter can be navigated to via <Route> or "href".
+      */}
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Landing />} />
@@ -163,11 +198,12 @@ function App() {
           <Route path="/product" element={<Product setCartIcon={setCartIcon} />} />
           <Route path="/checkout" element={<Checkout setCartIcon={setCartIcon} />} />
           <Route path="/additem" element={<AddItem loggedIn={loggedIn} />} />
-          <Route path="/myItems" element={<MyItems loggedIn={loggedIn}/>} />
-          <Route path="/editItems" element={<EditItems loggedIn={loggedIn}/>} />
+          <Route path="/myItems" element={<MyItems loggedIn={loggedIn} />} />
+          <Route path="/editItems" element={<EditItems loggedIn={loggedIn} />} />
         </Routes>
       </BrowserRouter>
 
+      {/* Cart Modal */}
       <Modal isOpen={modal} toggle={toggle}>
         <ModalHeader toggle={toggle}>Your Cart</ModalHeader>
         <ModalBody>
@@ -176,7 +212,8 @@ function App() {
           <h5 style={{ textAlign: 'right' }}>Total: ${totalPrice.toFixed(2)}</h5>
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" onClick={toggle}>
+          {/* MAIN CHANGE: trigger handleCheckoutClick instead of just toggle */}
+          <Button color="primary" onClick={handleCheckoutClick}>
             Checkout
           </Button>
           <Button color="secondary" onClick={toggle}>

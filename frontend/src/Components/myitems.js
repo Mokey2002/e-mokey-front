@@ -16,7 +16,7 @@ import {
 const MyItems = ({ loggedIn }) => {
   const navigate = useNavigate();
   const [Pdata, setData] = useState([]);
-
+console.log(loggedIn)
   // Redirect if not logged in
   useEffect(() => {
     if (!loggedIn) {

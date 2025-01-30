@@ -9,9 +9,8 @@ import {
   CardTitle,
   CardSubtitle,
   CardText,
-  Row,
-  Col,
   CardFooter,
+  Input
 } from 'reactstrap';
 
 const Product = (props) => {
@@ -19,14 +18,15 @@ const Product = (props) => {
   const location = useLocation();
 
   const [product, setProduct] = useState(null); // Initialize as null
-  const [loading, setLoading] = useState(true); // Add loading state
-  const [error, setError] = useState(null); // Add error state
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [quantity, setQuantity] = useState(1); // State to store selected quantity
 
   useEffect(() => {
     axios
       .get(`http://127.0.0.1:8000/api/product_id/${location.state.id}/`)
       .then((res) => {
-        setProduct(res.data); // Directly use the response
+        setProduct(res.data);
         setLoading(false);
       })
       .catch((err) => {
@@ -36,12 +36,20 @@ const Product = (props) => {
       });
   }, [location.state.id]);
 
+  const handleQuantityChange = (event) => {
+    const value = parseInt(event.target.value, 10);
+    if (value > 0 && value <= product.quantity) {
+      setQuantity(value);
+    }
+  };
+
   const onButtonClick = () => {
     axios
       .post('http://127.0.0.1:8000/api/cart/', {
         user_id: '1',
         product_id: product?.id,
-        quantity: '1',
+        quantity: quantity, // Send selected quantity
+        price: product?.price
       })
       .then(() => {
         props.setCartIcon(false);
@@ -69,25 +77,25 @@ const Product = (props) => {
         minHeight: '100vh',
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'center'
       }}
     >
       <Card
         style={{
           maxWidth: '600px',
           borderRadius: '15px',
-          boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
+          boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)'
         }}
       >
         <img
           alt={product?.product_name}
-          src="https://picsum.photos/600/300" // Replace with actual image URL
+          src="https://picsum.photos/600/300"
           style={{
             width: '100%',
             height: '300px',
             objectFit: 'cover',
             borderTopLeftRadius: '15px',
-            borderTopRightRadius: '15px',
+            borderTopRightRadius: '15px'
           }}
         />
         <CardBody style={{ padding: '20px' }}>
@@ -97,7 +105,7 @@ const Product = (props) => {
               fontWeight: 'bold',
               color: '#333',
               textAlign: 'center',
-              marginBottom: '15px',
+              marginBottom: '15px'
             }}
           >
             {product?.product_name}
@@ -107,7 +115,7 @@ const Product = (props) => {
             className="mb-3 text-muted"
             style={{
               textAlign: 'center',
-              fontSize: '16px',
+              fontSize: '16px'
             }}
           >
             {product?.category || 'Category not specified'}
@@ -118,7 +126,7 @@ const Product = (props) => {
               color: '#666',
               lineHeight: '1.6',
               textAlign: 'justify',
-              marginBottom: '20px',
+              marginBottom: '20px'
             }}
           >
             {product?.product_description || 'No description available.'}
@@ -126,11 +134,12 @@ const Product = (props) => {
           <CardFooter
             style={{
               display: 'flex',
+              flexDirection: 'column',
               justifyContent: 'space-between',
               alignItems: 'center',
               padding: '15px 20px',
               backgroundColor: '#f8f9fa',
-              borderTop: '1px solid #e9ecef',
+              borderTop: '1px solid #e9ecef'
             }}
           >
             <div>
@@ -138,20 +147,35 @@ const Product = (props) => {
               <span style={{ fontSize: '18px', color: '#007bff' }}>${product?.price}</span>
             </div>
             <div>
-              <strong style={{ fontSize: '18px', color: '#333' }}>Quantity:</strong>{' '}
+              <strong style={{ fontSize: '18px', color: '#333' }}>Available Stock:</strong>{' '}
               <span style={{ fontSize: '18px', color: '#007bff' }}>{product?.quantity}</span>
+            </div>
+            <div style={{ marginTop: '10px', width: '100%', textAlign: 'center' }}>
+              <Input
+                type="number"
+                value={quantity}
+                min="1"
+                max={product?.quantity}
+                onChange={handleQuantityChange}
+                style={{
+                  textAlign: 'center',
+                  width: '100px',
+                  margin: '10px auto'
+                }}
+              />
             </div>
           </CardFooter>
           <Button
             color="primary"
             size="lg"
             onClick={onButtonClick}
+            disabled={quantity <= 0 || quantity > product?.quantity} // Disable if quantity is invalid
             style={{
               marginTop: '20px',
               width: '100%',
               borderRadius: '25px',
               fontSize: '18px',
-              padding: '10px',
+              padding: '10px'
             }}
           >
             Add to Cart

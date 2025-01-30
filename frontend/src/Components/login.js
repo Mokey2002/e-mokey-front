@@ -42,6 +42,7 @@ const Login = (props) => {
         props.setLoggedIn(true)
         props.setEmail(email)
         navigate('/myItems')
+        
        /* fetch('http://localhost:8000/api/user/', {
           method: 'POST',
           headers: {

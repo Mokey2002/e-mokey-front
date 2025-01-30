@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom';
 import Home from './Components/home';
 import Login from './Components/login';
 import Landing from './Components/landing';
@@ -6,6 +6,7 @@ import Product from './Components/product';
 import Checkout from './Components/checkout';
 import AddItem from './Components/additem';
 import MyItems from './Components/myitems';
+import EditItems from './Components/editItems';
 import './App.css';
 import { useEffect, useState } from 'react';
 import {
@@ -15,23 +16,43 @@ import {
   NavbarBrand,
   Nav,
   NavItem,
-  NavLink
+  NavLink,
+  Button
 } from 'reactstrap';
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import axios from 'axios';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
-  const [email, setEmail] = useState(false);
+  const [email, setEmail] = useState('');
   const [collapsed, setCollapsed] = useState(true);
   const [cartIcon, setCartIcon] = useState(true);
   const [modal, setModal] = useState(false);
   const [userCart, setCart] = useState([]);
-  const [totalPrice, setTotalPrice] = useState(0); // Track total cart price
+  const [totalPrice, setTotalPrice] = useState(0);
+
+  //const navigate = useNavigate(); // Required for logout redirection
 
   const toggle = () => setModal(!modal);
   const toggleNavbar = () => setCollapsed(!collapsed);
+
+  // Load login state from localStorage
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user && user.token) {
+      setLoggedIn(true);
+      setEmail(user.email);
+    }
+  }, []);
+
+  // Logout function
+  const handleLogout = () => {
+    localStorage.removeItem('user'); // Clear user session
+    setLoggedIn(false); // Reset state
+    setEmail('');
+    //navigate('/login'); // Redirect to login page
+  };
 
   const handleClick = () => {
     setModal(!modal);
@@ -41,10 +62,9 @@ function App() {
       .then((res) => {
         console.log(res.data);
 
-        let total = 0; // Initialize total price
-
+        let total = 0;
         const listItems = res.data.map((item) => {
-          total += parseFloat(item.price) * item.quantity; // Calculate total price
+          total += parseFloat(item.price) * item.quantity;
 
           return (
             <li key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '5px 0' }}>
@@ -57,7 +77,7 @@ function App() {
         });
 
         setCart(listItems);
-        setTotalPrice(total); // Update total price in state
+        setTotalPrice(total);
       })
       .catch((err) => console.error('Error fetching cart data:', err));
   };
@@ -68,7 +88,7 @@ function App() {
       .then((res) => {
         console.log('Item deleted');
 
-        let total = 0; // Recalculate total price
+        let total = 0;
         const listItems = res.data.map((item) => {
           total += item.price * item.quantity;
 
@@ -83,7 +103,7 @@ function App() {
         });
 
         setCart(listItems);
-        setTotalPrice(total); // Update total price after deletion
+        setTotalPrice(total);
       })
       .catch((err) => console.error('Error deleting product:', err));
   };
@@ -110,14 +130,27 @@ function App() {
         <Collapse isOpen={!collapsed} navbar>
           <Nav navbar>
             <NavItem>
-              <NavLink href="/components/">Components</NavLink>
+              <NavLink href="/landing">Home</NavLink>
             </NavItem>
-            <NavItem>
-              <NavLink href="/login">Login</NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink href="https://github.com/Mokey2002?tab=repositories">Mokey</NavLink>
-            </NavItem>
+            {!loggedIn ? (
+              <NavItem>
+                <NavLink href="/login">Login</NavLink>
+              </NavItem>
+            ) : (
+              <>
+                <NavItem>
+                  <NavLink href="/myItems">My Items</NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink href="/additem">Add Item</NavLink>
+                </NavItem>
+                <NavItem>
+                  <Button color="danger" onClick={handleLogout} style={{ marginLeft: '10px' }}>
+                    Logout
+                  </Button>
+                </NavItem>
+              </>
+            )}
           </Nav>
         </Collapse>
       </Navbar>
@@ -129,8 +162,9 @@ function App() {
           <Route path="/landing" element={<Landing />} />
           <Route path="/product" element={<Product setCartIcon={setCartIcon} />} />
           <Route path="/checkout" element={<Checkout setCartIcon={setCartIcon} />} />
-          <Route path="/additem" element={<AddItem loggedIn={setLoggedIn}  />} />
-          <Route path="/myItems" element={<MyItems />} />
+          <Route path="/additem" element={<AddItem loggedIn={loggedIn} />} />
+          <Route path="/myItems" element={<MyItems loggedIn={loggedIn}/>} />
+          <Route path="/editItems" element={<EditItems loggedIn={loggedIn}/>} />
         </Routes>
       </BrowserRouter>
 

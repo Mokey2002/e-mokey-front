@@ -13,11 +13,18 @@ import {
   Button,
 } from 'reactstrap';
 
-const MyItems = () => {
+const MyItems = ({ loggedIn }) => {
   const navigate = useNavigate();
   const [Pdata, setData] = useState([]);
 
-  // Function to fetch data from the server
+  // Redirect if not logged in
+  useEffect(() => {
+    if (!loggedIn) {
+      navigate('/landing');
+    }
+  }, [loggedIn, navigate]);
+
+  // Fetch data from the server
   const fetchData = () => {
     axios
       .get('http://127.0.0.1:8000/api/product/')
@@ -37,8 +44,9 @@ const MyItems = () => {
     navigate('/product', { state: { id: productId, mode: 'view' } });
   };
 
+  // Navigate to edititems page
   const handleEdit = (productId) => () => {
-    navigate('/product', { state: { id: productId, mode: 'edit' } });
+    navigate('/edititems', { state: { id: productId } });
   };
 
   const handleDelete = (productId) => () => {

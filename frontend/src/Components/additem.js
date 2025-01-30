@@ -9,7 +9,7 @@ const AddItem = ({ loggedIn }) => {
   // Redirect if not logged in
   useEffect(() => {
     if (!loggedIn) {
-     // navigate('/landing');
+     navigate('/landing');
     }
   }, [loggedIn, navigate]); // Dependency array ensures this runs only when `loggedIn` changes
 

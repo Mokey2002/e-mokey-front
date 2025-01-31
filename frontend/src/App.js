@@ -52,7 +52,7 @@ function App() {
     // If you want to programmatically navigate, see notes below
     // navigate('/login');
   };
-
+  
   // Open the cart modal and fetch cart data
   const handleClick = () => {
     setModal(!modal);
@@ -60,6 +60,7 @@ function App() {
     axios
       .get('http://127.0.0.1:8000/api/cart/')
       .then((res) => {
+        console.log(res)
         let total = 0;
         const listItems = res.data.map((item) => {
           total += parseFloat(item.price) * item.quantity;
@@ -197,9 +198,9 @@ function App() {
           <Route path="/landing" element={<Landing />} />
           <Route path="/product" element={<Product setCartIcon={setCartIcon} />} />
           <Route path="/checkout" element={<Checkout setCartIcon={setCartIcon} />} />
-          <Route path="/additem" element={<AddItem loggedIn={loggedIn} />} />
-          <Route path="/myItems" element={<MyItems loggedIn={loggedIn} />} />
-          <Route path="/editItems" element={<EditItems loggedIn={loggedIn} />} />
+          <Route path="/additem" element={<AddItem loggedIn={setLoggedIn} />} />
+          <Route path="/myItems" element={<MyItems loggedIn={setLoggedIn} />} />
+          <Route path="/editItems" element={<EditItems loggedIn={setLoggedIn} />} />
         </Routes>
       </BrowserRouter>
 

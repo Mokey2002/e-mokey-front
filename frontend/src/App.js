@@ -178,6 +178,9 @@ function App() {
                   <NavLink href="/additem">Add Item</NavLink>
                 </NavItem>
                 <NavItem>
+                    <NavLink href="/soldItems">Sold History</NavLink>
+                </NavItem>
+                <NavItem>
                   <Button color="danger" onClick={handleLogout} style={{ marginLeft: '10px' }}>
                     Logout
                   </Button>

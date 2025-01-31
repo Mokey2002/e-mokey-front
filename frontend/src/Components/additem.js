@@ -1,26 +1,42 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Col, Form, FormGroup, Label, Input } from 'reactstrap';
+import {
+  Button,
+  Col,
+  Container,
+  Row,
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  Card,
+  CardBody,
+  CardTitle,
+  Alert,
+} from 'reactstrap';
 import axios from 'axios';
 
 const AddItem = ({ loggedIn }) => {
   const navigate = useNavigate();
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertColor, setAlertColor] = useState('info');
 
   // Redirect if not logged in
   useEffect(() => {
     if (!loggedIn) {
-     navigate('/landing');
+      navigate('/landing');
     }
-  }, [loggedIn, navigate]); // Dependency array ensures this runs only when `loggedIn` changes
+  }, [loggedIn, navigate]);
 
   // Create refs for each input
-  const itemNameRef = useRef();
-  const priceRef = useRef();
-  const descriptionRef = useRef();
-  const qtyRef = useRef();
-  const itemIdRef = useRef();
-  console.log(loggedIn)
-  // Handle form submissiocon
+  const itemNameRef = useRef(null);
+  const priceRef = useRef(null);
+  const descriptionRef = useRef(null);
+  const qtyRef = useRef(null);
+  const itemIdRef = useRef(null);
+
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = {
@@ -39,11 +55,15 @@ const AddItem = ({ loggedIn }) => {
       });
 
       console.log('API Response:', response.data);
+      setAlertMessage('Item added successfully!');
+      setAlertColor('success');
+      setAlertVisible(true);
     } catch (error) {
       console.error('Error submitting the form:', error);
+      setAlertMessage('Error submitting the form. Please try again.');
+      setAlertColor('danger');
+      setAlertVisible(true);
     }
-
-    console.log('Form Data Submitted:', formData);
   };
 
   if (!loggedIn) {
@@ -51,88 +71,106 @@ const AddItem = ({ loggedIn }) => {
   }
 
   return (
-    <Form onSubmit={handleSubmit}>
-      <FormGroup row>
-        <Label for="itemName" sm={2}>
-          Item Name
-        </Label>
-        <Col sm={10}>
-          <Input
-            id="itemName"
-            name="itemName"
-            placeholder="Enter item name"
-            innerRef={itemNameRef}
-            type="text"
-          />
+    <Container className="mt-5">
+      <Row className="justify-content-center">
+        <Col md={8} lg={6}>
+          <Card className="shadow">
+            <CardBody>
+              <CardTitle tag="h3" className="text-center mb-4">
+                Add New Item
+              </CardTitle>
+              {/* Button to navigate to the My Items page */}
+              <div className="text-center mb-3">
+                <Button color="info" onClick={() => navigate('/myItems')}>
+                  My Items
+                </Button>
+              </div>
+              {alertVisible && (
+                <Alert
+                  color={alertColor}
+                  toggle={() => setAlertVisible(false)}
+                  fade={false} // Disable fade to avoid timeout warning
+                >
+                  {alertMessage}
+                </Alert>
+              )}
+              <Form onSubmit={handleSubmit}>
+                <FormGroup>
+                  <Label for="itemName">Item Name</Label>
+                  <Input
+                    id="itemName"
+                    name="itemName"
+                    placeholder="Enter item name"
+                    innerRef={itemNameRef}
+                    type="text"
+                    required
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label for="itemId">Item ID</Label>
+                  <Input
+                    id="itemId"
+                    name="itemId"
+                    placeholder="Enter item id"
+                    innerRef={itemIdRef}
+                    type="text"
+                    required
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label for="price">Price</Label>
+                  <Input
+                    id="price"
+                    name="price"
+                    placeholder="$0.99"
+                    innerRef={priceRef}
+                    type="number"
+                    step="0.01"
+                    required
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label for="description">Description</Label>
+                  <Input
+                    id="description"
+                    name="description"
+                    placeholder="Enter description"
+                    innerRef={descriptionRef}
+                    type="textarea"
+                    required
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label for="qty">Quantity</Label>
+                  <Input
+                    id="qty"
+                    name="qty"
+                    defaultValue="1"
+                    innerRef={qtyRef}
+                    type="select"
+                    required
+                  >
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                  </Input>
+                </FormGroup>
+                <div className="text-center">
+                  <Button type="submit" color="primary" className="mr-2">
+                    Submit
+                  </Button>
+                  <Button type="reset" color="secondary">
+                    Reset
+                  </Button>
+                </div>
+              </Form>
+            </CardBody>
+          </Card>
         </Col>
-      </FormGroup>
-      <FormGroup row>
-        <Label for="itemId" sm={2}>
-          Item ID
-        </Label>
-        <Col sm={10}>
-          <Input
-            id="itemId"
-            name="itemId"
-            placeholder="Enter item id"
-            innerRef={itemIdRef}
-            type="text"
-          />
-        </Col>
-      </FormGroup>
-      <FormGroup row>
-        <Label for="price" sm={2}>
-          Price
-        </Label>
-        <Col sm={10}>
-          <Input
-            id="price"
-            name="price"
-            placeholder="$0.99"
-            innerRef={priceRef}
-            type="text"
-          />
-        </Col>
-      </FormGroup>
-      <FormGroup row>
-        <Label for="description" sm={2}>
-          Description
-        </Label>
-        <Col sm={10}>
-          <Input
-            id="description"
-            name="description"
-            placeholder="Enter description"
-            innerRef={descriptionRef}
-            type="textarea"
-          />
-        </Col>
-      </FormGroup>
-      <FormGroup row>
-        <Label for="qty" sm={2}>
-          Qty
-        </Label>
-        <Col sm={10}>
-          <Input id="qty" name="qty" defaultValue="1" innerRef={qtyRef} type="select">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-          </Input>
-        </Col>
-      </FormGroup>
-      <FormGroup check row>
-        <Col
-          sm={{
-            offset: 2,
-            size: 10,
-          }}
-        >
-          <Button type="submit">Submit</Button>
-        </Col>
-      </FormGroup>
-    </Form>
+      </Row>
+    </Container>
   );
 };
 

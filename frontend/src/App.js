@@ -7,6 +7,7 @@ import Checkout from './Components/checkout';  // <-- Import the new Checkout pa
 import AddItem from './Components/additem';
 import MyItems from './Components/myitems';
 import EditItems from './Components/editItems';
+import History from './Components/history';
 import './App.css';
 import { useEffect, useState } from 'react';
 import {
@@ -201,6 +202,8 @@ function App() {
           <Route path="/additem" element={<AddItem loggedIn={setLoggedIn} />} />
           <Route path="/myItems" element={<MyItems loggedIn={setLoggedIn} />} />
           <Route path="/editItems" element={<EditItems loggedIn={setLoggedIn} />} />
+          <Route path="/soldItems" element={<History loggedIn={setLoggedIn} />} />
+        
         </Routes>
       </BrowserRouter>
 

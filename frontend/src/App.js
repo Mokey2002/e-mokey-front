@@ -3,14 +3,16 @@ import Home from './Components/home';
 import Login from './Components/login';
 import Landing from './Components/landing';
 import Product from './Components/product';
-import Checkout from './Components/checkout';  // <-- Import the new Checkout page
+import Checkout from './Components/checkout';
 import AddItem from './Components/additem';
 import MyItems from './Components/myitems';
 import EditItems from './Components/editItems';
 import History from './Components/history';
 import BuyerLogin from './Components/buyerlogin';
 import BuyerDashboard from './Components/buyerDashboard';
+import BuyerRegister from './Components/buyerRegistration';
 import './App.css';
+
 import { useEffect, useState } from 'react';
 import {
   Collapse,
@@ -22,10 +24,9 @@ import {
   NavLink,
   Button
 } from 'reactstrap';
-import "bootstrap-icons/font/bootstrap-icons.css";
+import 'bootstrap-icons/font/bootstrap-icons.css';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import axios from 'axios';
-import BuyerRegister from './Components/buyerRegistration';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -50,11 +51,10 @@ function App() {
 
   // Logout function
   const handleLogout = () => {
-    localStorage.removeItem('user'); // Clear user session
-    setLoggedIn(false); // Reset state
+    localStorage.removeItem('user'); 
+    setLoggedIn(false);
     setEmail('');
-    // If you want to programmatically navigate, see notes below
-    // navigate('/login');
+    // e.g.: navigate('/login'); if you want to redirect
   };
   
   // Open the cart modal and fetch cart data
@@ -64,11 +64,9 @@ function App() {
     axios
       .get('http://127.0.0.1:8000/api/cart/')
       .then((res) => {
-        console.log(res)
         let total = 0;
         const listItems = res.data.map((item) => {
           total += parseFloat(item.price) * item.quantity;
-
           return (
             <li
               key={item.id}
@@ -80,10 +78,13 @@ function App() {
               }}
             >
               <span>
-                {item.product_name} (x{item.quantity}) - $
-                {item.price.toFixed(2)}
+                {item.product_name} (x{item.quantity}) - ${item.price.toFixed(2)}
               </span>
-              <Button color="danger" size="sm" onClick={() => handleDelete(item.id)}>
+              <Button
+                color="danger"
+                size="sm"
+                onClick={() => handleDelete(item.id)}
+              >
                 Delete
               </Button>
             </li>
@@ -116,10 +117,13 @@ function App() {
               }}
             >
               <span>
-                {item.product_name} (x{item.quantity}) - $
-                {item.price.toFixed(2)}
+                {item.product_name} (x{item.quantity}) - ${item.price.toFixed(2)}
               </span>
-              <Button color="danger" size="sm" onClick={() => handleDelete(item.id)}>
+              <Button
+                color="danger"
+                size="sm"
+                onClick={() => handleDelete(item.id)}
+              >
                 Delete
               </Button>
             </li>
@@ -133,15 +137,10 @@ function App() {
   };
 
   // Navigate to Checkout on button click
-  // Because we're rendering <BrowserRouter> here, we'll do a simple approach:
-  //  - close the modal
-  //  - do window.location.href to jump to /checkout
-  // 
-  // If you want client-side navigation (without a full page refresh),
-  // see the "Alternate Approach" notes below.
   const handleCheckoutClick = () => {
-    toggle();
+    toggle(); 
     window.location.href = '/checkout';
+    // OR use react-router's navigate for client-side transition
   };
 
   return (
@@ -150,6 +149,8 @@ function App() {
         <NavbarBrand href="/" className="me-auto">
           Mokey
         </NavbarBrand>
+
+        {/* CART ICON */}
         <NavbarBrand>
           {cartIcon ? (
             <div>
@@ -165,15 +166,19 @@ function App() {
         <NavbarToggler onClick={toggleNavbar} className="me-2" />
         <Collapse isOpen={!collapsed} navbar>
           <Nav navbar>
+
+            {/* FIX: Separate <NavItem> for Home and Login, no nesting */}
             <NavItem>
               <NavLink href="/landing">Home</NavLink>
-              <NavItem>
-                <NavLink href="/buyerlogin">Login</NavLink>
-              </NavItem>
             </NavItem>
+            <NavItem>
+              <NavLink href="/buyerlogin">Login</NavLink>
+            </NavItem>
+
+            {/* Seller Login / Seller Nav */}
             {!loggedIn ? (
               <NavItem>
-                <NavLink href="/login"> Seller Login</NavLink>
+                <NavLink href="/login">Seller Login</NavLink>
               </NavItem>
             ) : (
               <>
@@ -184,10 +189,14 @@ function App() {
                   <NavLink href="/additem">Add Item</NavLink>
                 </NavItem>
                 <NavItem>
-                    <NavLink href="/soldItems">Sold History</NavLink>
+                  <NavLink href="/soldItems">Sold History</NavLink>
                 </NavItem>
                 <NavItem>
-                  <Button color="danger" onClick={handleLogout} style={{ marginLeft: '10px' }}>
+                  <Button
+                    color="danger"
+                    onClick={handleLogout}
+                    style={{ marginLeft: '10px' }}
+                  >
                     Logout
                   </Button>
                 </NavItem>
@@ -197,14 +206,14 @@ function App() {
         </Collapse>
       </Navbar>
 
-      {/*
-        Wrap your routes in BrowserRouter.
-        Everything inside this BrowserRouter can be navigated to via <Route> or "href".
-      */}
+      {/* ROUTES */}
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login setLoggedIn={setLoggedIn} setEmail={setEmail} />} />
+          <Route
+            path="/login"
+            element={<Login setLoggedIn={setLoggedIn} setEmail={setEmail} />}
+          />
           <Route path="/landing" element={<Landing />} />
           <Route path="/product" element={<Product setCartIcon={setCartIcon} />} />
           <Route path="/checkout" element={<Checkout setCartIcon={setCartIcon} />} />
@@ -212,14 +221,16 @@ function App() {
           <Route path="/myItems" element={<MyItems loggedIn={setLoggedIn} />} />
           <Route path="/editItems" element={<EditItems loggedIn={setLoggedIn} />} />
           <Route path="/soldItems" element={<History loggedIn={setLoggedIn} />} />
-          <Route path="/buyerLogin" element={<BuyerLogin setLoggedIn={setLoggedIn} setEmail={setEmail} />} />
-          <Route path="/buyerRegister" element={<BuyerRegister/>} />
-          <Route path="/Dashboard" element={<BuyerDashboard/>} />
-        
+          <Route
+            path="/buyerLogin"
+            element={<BuyerLogin setLoggedIn={setLoggedIn} setEmail={setEmail} />}
+          />
+          <Route path="/buyerRegister" element={<BuyerRegister />} />
+          <Route path="/Dashboard" element={<BuyerDashboard />} />
         </Routes>
       </BrowserRouter>
 
-      {/* Cart Modal */}
+      {/* CART MODAL */}
       <Modal isOpen={modal} toggle={toggle}>
         <ModalHeader toggle={toggle}>Your Cart</ModalHeader>
         <ModalBody>
@@ -228,7 +239,6 @@ function App() {
           <h5 style={{ textAlign: 'right' }}>Total: ${totalPrice.toFixed(2)}</h5>
         </ModalBody>
         <ModalFooter>
-          {/* MAIN CHANGE: trigger handleCheckoutClick instead of just toggle */}
           <Button color="primary" onClick={handleCheckoutClick}>
             Checkout
           </Button>

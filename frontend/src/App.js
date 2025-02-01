@@ -8,6 +8,7 @@ import AddItem from './Components/additem';
 import MyItems from './Components/myitems';
 import EditItems from './Components/editItems';
 import History from './Components/history';
+import BuyerLogin from './Components/buyerlogin';
 import './App.css';
 import { useEffect, useState } from 'react';
 import {
@@ -23,6 +24,7 @@ import {
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import axios from 'axios';
+import BuyerRegister from './Components/buyerRegistration';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -164,10 +166,13 @@ function App() {
           <Nav navbar>
             <NavItem>
               <NavLink href="/landing">Home</NavLink>
+              <NavItem>
+                <NavLink href="/buyerlogin">Login</NavLink>
+              </NavItem>
             </NavItem>
             {!loggedIn ? (
               <NavItem>
-                <NavLink href="/login">Login</NavLink>
+                <NavLink href="/login"> Seller Login</NavLink>
               </NavItem>
             ) : (
               <>
@@ -206,6 +211,8 @@ function App() {
           <Route path="/myItems" element={<MyItems loggedIn={setLoggedIn} />} />
           <Route path="/editItems" element={<EditItems loggedIn={setLoggedIn} />} />
           <Route path="/soldItems" element={<History loggedIn={setLoggedIn} />} />
+          <Route path="/buyerLogin" element={<BuyerLogin setLoggedIn={setLoggedIn} setEmail={setEmail} />} />
+          <Route path="/buyerRegister" element={<BuyerRegister/>} />
         
         </Routes>
       </BrowserRouter>

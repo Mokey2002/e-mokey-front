@@ -9,6 +9,7 @@ import MyItems from './Components/myitems';
 import EditItems from './Components/editItems';
 import History from './Components/history';
 import BuyerLogin from './Components/buyerlogin';
+import BuyerDashboard from './Components/buyerDashboard';
 import './App.css';
 import { useEffect, useState } from 'react';
 import {
@@ -213,6 +214,7 @@ function App() {
           <Route path="/soldItems" element={<History loggedIn={setLoggedIn} />} />
           <Route path="/buyerLogin" element={<BuyerLogin setLoggedIn={setLoggedIn} setEmail={setEmail} />} />
           <Route path="/buyerRegister" element={<BuyerRegister/>} />
+          <Route path="/Dashboard" element={<BuyerDashboard/>} />
         
         </Routes>
       </BrowserRouter>

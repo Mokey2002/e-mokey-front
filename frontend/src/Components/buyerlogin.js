@@ -86,7 +86,7 @@ const BuyerLogin = ({ setLoggedIn, setEmail }) => {
       );
       setEmail(emailLocal);
       setLoggedIn(true);
-      navigate('/buyerDashboard');
+      navigate('/Dashboard');
       // ---- End of simulated block ----
     } catch (error) {
       console.error('Error logging in:', error);

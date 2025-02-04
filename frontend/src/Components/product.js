@@ -44,6 +44,7 @@ const Product = (props) => {
   };
 
   const onButtonClick = () => {
+    console.log(product.id)
     axios
       .post('http://127.0.0.1:8000/api/cart/', {
         user_id: '1',

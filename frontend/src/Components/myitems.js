@@ -150,7 +150,7 @@ const MyItems = ({ loggedIn }) => {
               <div style={{ overflow: 'hidden', height: '150px' }}>
                 <img
                   alt={product.name}
-                  src={product.image_url || 'https://via.placeholder.com/280x150'}
+                  src={product.image_url || "https://picsum.photos/600/300"}
                   style={{
                     width: '100%',
                     height: '100%',

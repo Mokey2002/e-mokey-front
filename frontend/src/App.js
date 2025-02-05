@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom';
 import Home from './Components/home';
 import Login from './Components/login';
 import Landing from './Components/landing';
@@ -12,8 +12,11 @@ import BuyerLogin from './Components/buyerlogin';
 import BuyerDashboard from './Components/buyerDashboard';
 import BuyerRegister from './Components/buyerRegistration';
 
+// Redux
+import { useSelector, useDispatch } from 'react-redux';
+import { buyerLogout, buyerLogin } from './Components/redux/buyerAuthSlice';
+import { sellerLogin,sellerLogout } from './Components/redux/sellerAuthSlice';
 import './App.css';
-
 import { useEffect, useState } from 'react';
 import {
   Collapse,
@@ -32,8 +35,23 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import axios from 'axios';
 
+
+
 function App() {
-  const [loggedIn, setLoggedIn] = useState(false);
+  return (
+    <BrowserRouter>
+      <MainApp />
+    </BrowserRouter>
+  );
+}
+
+function MainApp() {
+  const dispatch = useDispatch();
+  const buyerLoggedIn = useSelector((state) => state.buyerAuth.loggedIn); // Redux buyer state
+  const sellerLoggedIn = useSelector((state) => state.sellerAuth.loggedIn);
+  const navigate = useNavigate(); // Used for redirection
+
+  //const [sellerLoggedIn, setSellerLoggedIn] = useState(false);
   const [email, setEmail] = useState('');
   const [collapsed, setCollapsed] = useState(true);
   const [cartIcon, setCartIcon] = useState(true);
@@ -44,23 +62,34 @@ function App() {
   const toggle = () => setModal(!modal);
   const toggleNavbar = () => setCollapsed(!collapsed);
 
-  // Load login state from localStorage
+  // Load login state from localStorage on app start
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user && user.token) {
-      setLoggedIn(true);
-      setEmail(user.email);
+    const sellerUser = JSON.parse(localStorage.getItem('user'));
+    if (sellerUser && sellerUser.token) {
+      dispatch(sellerLogin(sellerUser));
+      //setSellerLoggedIn(true);
+      //setEmail(sellerUser.email);
     }
-  }, []);
+    console.log(sellerUser)
+    const buyerUser = JSON.parse(localStorage.getItem('buyerUser'));
+    if (buyerUser && buyerUser.token) {
+      dispatch(buyerLogin(buyerUser)); // Sync Redux state with localStorage
+    }
+    console.log(buyerUser)
+  }, [dispatch]);
 
-  // Logout function
+  // Handle Logout for both Buyers & Sellers
   const handleLogout = () => {
-    localStorage.removeItem('user'); 
-    setLoggedIn(false);
-    setEmail('');
-    // e.g.: navigate('/login'); if you want to redirect
+    if (buyerLoggedIn) {
+      dispatch(buyerLogout()); // Redux Logout for Buyers
+      localStorage.removeItem('buyerUser');
+    } else if (sellerLoggedIn) {
+      dispatch(sellerLogout());
+      localStorage.removeItem('user');
+    }
+    navigate('/landing'); // Redirect after logout
   };
-  
+
   // Open the cart modal and fetch cart data
   const handleClick = () => {
     setModal(!modal);
@@ -72,25 +101,9 @@ function App() {
         const listItems = res.data.map((item) => {
           total += parseFloat(item.price) * item.quantity;
           return (
-            <li
-              key={item.id}
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '5px 0'
-              }}
-            >
-              <span>
-                {item.product_name} (x{item.quantity}) - ${item.price.toFixed(2)}
-              </span>
-              <Button
-                color="danger"
-                size="sm"
-                onClick={() => handleDelete(item.id)}
-              >
-                Delete
-              </Button>
+            <li key={item.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0' }}>
+              <span>{item.product_name} (x{item.quantity}) - ${item.price.toFixed(2)}</span>
+              <Button color="danger" size="sm" onClick={() => handleDelete(item.id)}>Delete</Button>
             </li>
           );
         });
@@ -105,132 +118,86 @@ function App() {
   const handleDelete = (product_id) => {
     axios
       .delete(`http://127.0.0.1:8000/api/delete_cart_product_id/${product_id}/`)
-      .then((res) => {
+      .then(() => {
         console.log('Item deleted');
-        let total = 0;
-        const listItems = res.data.map((item) => {
-          total += item.price * item.quantity;
-          return (
-            <li
-              key={item.id}
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '5px 0'
-              }}
-            >
-              <span>
-                {item.product_name} (x{item.quantity}) - ${item.price.toFixed(2)}
-              </span>
-              <Button
-                color="danger"
-                size="sm"
-                onClick={() => handleDelete(item.id)}
-              >
-                Delete
-              </Button>
-            </li>
-          );
-        });
-
-        setCart(listItems);
-        setTotalPrice(total);
+        handleClick(); // Refresh cart after delete
       })
       .catch((err) => console.error('Error deleting product:', err));
-  };
-
-  // Navigate to Checkout on button click
-  const handleCheckoutClick = () => {
-    toggle(); 
-    window.location.href = '/checkout';
-    // OR use react-router's navigate for client-side transition
   };
 
   return (
     <div className="App">
       <Navbar color="faded" light>
-        <NavbarBrand href="/" className="me-auto">
-          Mokey
-        </NavbarBrand>
+        <NavbarBrand href="/">Mokey</NavbarBrand>
 
         {/* CART ICON */}
         <NavbarBrand>
           {cartIcon ? (
-            <div>
-              <i className="icon bi-cart" onClick={handleClick}></i>
-            </div>
+            <div><i className="icon bi-cart" onClick={handleClick}></i></div>
           ) : (
-            <div>
-              <i className="icon bi-cart-check-fill" onClick={handleClick}></i>
-            </div>
+            <div><i className="icon bi-cart-check-fill" onClick={handleClick}></i></div>
           )}
         </NavbarBrand>
 
         <NavbarToggler onClick={toggleNavbar} className="me-2" />
         <Collapse isOpen={!collapsed} navbar>
           <Nav navbar>
+            <NavItem><NavLink href="/landing">Home</NavLink></NavItem>
 
-            {/* FIX: Separate <NavItem> for Home and Login, no nesting */}
-            <NavItem>
-              <NavLink href="/landing">Home</NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink href="/buyerlogin">Login</NavLink>
-            </NavItem>
+            {!buyerLoggedIn && !sellerLoggedIn ? (
+                // If no one is logged in, show login options
+                <>
+                  <NavItem><NavLink href="/buyerlogin">Buyer Login</NavLink></NavItem>
+                  <NavItem><NavLink href="/login">Seller Login</NavLink></NavItem>
+                </>
+              ) : (
+                <>
+                  {/* If Buyer is logged in, show Buyer Dashboard */}
+                  {buyerLoggedIn && (
+                    <NavItem><NavLink href="/Dashboard">Buyer Dashboard</NavLink></NavItem>
+                  )}
 
-            {/* Seller Login / Seller Nav */}
-            {!loggedIn ? (
-              <NavItem>
-                <NavLink href="/login">Seller Login</NavLink>
-              </NavItem>
-            ) : (
-              <>
-                <NavItem>
-                  <NavLink href="/myItems">My Items</NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink href="/additem">Add Item</NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink href="/soldItems">Sold History</NavLink>
-                </NavItem>
-                <NavItem>
-                  <Button
-                    color="danger"
-                    onClick={handleLogout}
-                    style={{ marginLeft: '10px' }}
-                  >
-                    Logout
-                  </Button>
-                </NavItem>
-              </>
-            )}
+                  {/* If Seller is logged in, show Seller Navigation */}
+                  {sellerLoggedIn && (
+                    <>
+                      <NavItem><NavLink href="/myItems">My Items</NavLink></NavItem>
+                      <NavItem><NavLink href="/additem">Add Item</NavLink></NavItem>
+                      <NavItem><NavLink href="/soldItems">Sold History</NavLink></NavItem>
+                    </>
+                  )}
+
+                  {/* Show Logout Button for both Buyer & Seller */}
+                  {(buyerLoggedIn || sellerLoggedIn) && (
+                    <NavItem>
+                      <Button color="danger" onClick={handleLogout} style={{ marginLeft: '10px' }}>
+                        Logout
+                      </Button>
+                    </NavItem>
+                  )}
+                </>
+              )}
+
           </Nav>
         </Collapse>
       </Navbar>
 
       {/* ROUTES */}
-      <BrowserRouter>
+   
         <Routes>
           <Route path="/" element={<Landing />} />
-          <Route
-            path="/login"
-            element={<Login setLoggedIn={setLoggedIn} setEmail={setEmail} />}
-          />
+          <Route path="/login" element={<Login />} />
           <Route path="/landing" element={<Landing />} />
-          <Route path="/product" element={<Product setCartIcon={setCartIcon} />} />
-          <Route path="/checkout" element={<Checkout setCartIcon={setCartIcon} />} />
-          <Route path="/additem" element={<AddItem loggedIn={setLoggedIn} />} />
-          <Route path="/myItems" element={<MyItems loggedIn={setLoggedIn} />} />
-          <Route path="/editItems" element={<EditItems loggedIn={setLoggedIn} />} />
-          <Route path="/soldItems" element={<History loggedIn={setLoggedIn} />} />
-      
-          <Route path="/buyerLogin" element={<BuyerLogin setLoggedIn={setLoggedIn} setEmail={setEmail} />} />
+          <Route path="/product" element={<Product />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/additem" element={<AddItem />} />
+          <Route path="/myItems" element={<MyItems />} />
+          <Route path="/editItems" element={<EditItems />} />
+          <Route path="/soldItems" element={<History />} />
+          <Route path="/buyerLogin" element={<BuyerLogin />} />
           <Route path="/buyerRegister" element={<BuyerRegister />} />
           <Route path="/Dashboard" element={<BuyerDashboard />} />
         </Routes>
-      </BrowserRouter>
+     
 
       {/* CART MODAL */}
       <Modal isOpen={modal} toggle={toggle}>
@@ -241,34 +208,18 @@ function App() {
           <h5 style={{ textAlign: 'right' }}>Total: ${totalPrice.toFixed(2)}</h5>
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" onClick={handleCheckoutClick}>
-            Checkout
-          </Button>
-          <Button color="secondary" onClick={toggle}>
-            Close
-          </Button>
+          <Button color="primary" onClick={() => navigate('/checkout')}>Checkout</Button>
+          <Button color="secondary" onClick={toggle}>Close</Button>
         </ModalFooter>
       </Modal>
-            {/* FOOTER */}
-            <footer className="footer mt-5 bg-dark text-light py-4">
+
+      {/* FOOTER */}
+      <footer className="footer mt-5 bg-dark text-light py-4">
         <Container>
           <Row className="text-center">
-            <Col md="4">
-              <h5>Mokey</h5>
-              <p>© {new Date().getFullYear()} Mokey. All rights reserved.</p>
-            </Col>
-            <Col md="4">
-              <h5>Quick Links</h5>
-              <NavLink href="/landing" className="text-light">Home</NavLink>
-              <NavLink href="/contact" className="text-light">Contact</NavLink>
-              <NavLink href="/privacy" className="text-light">Privacy Policy</NavLink>
-            </Col>
-            <Col md="4">
-              <h5>Follow Us</h5>
-              <a href="#" className="text-light me-3"><i className="bi bi-facebook"></i></a>
-              <a href="#" className="text-light me-3"><i className="bi bi-twitter"></i></a>
-              <a href="#" className="text-light"><i className="bi bi-instagram"></i></a>
-            </Col>
+            <Col md="4"><h5>Mokey</h5><p>© {new Date().getFullYear()} Mokey. All rights reserved.</p></Col>
+            <Col md="4"><h5>Quick Links</h5><NavLink href="/contact" className="text-light">Contact</NavLink></Col>
+            <Col md="4"><h5>Follow Us</h5></Col>
           </Row>
         </Container>
       </footer>

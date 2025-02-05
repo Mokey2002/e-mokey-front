@@ -1,25 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
+import { sellerLogin } from './redux/sellerAuthSlice';
 
-const Login = ({ setLoggedIn, setEmail }) => {
+const Login = () => {
   const [email, setLocalEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const sellerAuth = useSelector((state) => state.sellerAuth.loggedIn); //
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user'));
     if (user && user.token) {
-      setLoggedIn(true);
-      setEmail(user.email);
+      dispatch(sellerLogin(user));
+      navigate('/myItems')
     }
-  }, []);
+  }, [dispatch, navigate]);
 
   const onButtonClick = async () => {
-    setEmailError('');
-    setPasswordError('');
+    setLoading(true) //need to recheck this
 
     if (email.trim() === '') {
       setEmailError('Please enter your email');
@@ -44,12 +48,12 @@ const Login = ({ setLoggedIn, setEmail }) => {
       //});
 
       //if (response.data.success) {
-        localStorage.setItem('user', JSON.stringify({ email, token: 'response.data.token' }));
-        
-        setLoggedIn(true); // Update state
-        setEmail(email);
-
-        navigate('/myItems');
+        //localStorage.setItem('user', JSON.stringify({ email, token: 'response.data.token' }));
+        const userData = { seller: { email }, token: 'fake_seller_token' };
+        dispatch(sellerLogin(userData)); // ✅ Dispatch Redux action
+        navigate('/landing');
+       
+        //navigate('/myItems');
      // } else {
      //   alert('Invalid credentials. Please try again.');
      // }

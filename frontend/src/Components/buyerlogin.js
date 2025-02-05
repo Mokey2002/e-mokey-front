@@ -3,16 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { buyerLogin } from './redux/buyerAuthSlice';
 import axios from 'axios';
-import { Button, Card, CardBody, Input } from 'reactstrap';
-
+import { Button, Card, CardBody, CardTitle, CardText, Input, Spinner } from 'reactstrap';
+import '../BuyerLogin.css';
 const BuyerLogin = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const buyerAuth = useSelector((state) => state.buyerAuth.loggedIn); // ✅ Read state from Redux
+  const buyerAuth = useSelector((state) => state.buyerAuth.loggedIn);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const buyerUser = JSON.parse(localStorage.getItem('buyerUser'));
@@ -24,28 +25,75 @@ const BuyerLogin = () => {
 
   const handleLogin = async () => {
     setLoading(true);
+    setError('');
+
+    if (!email || !password) {
+      setError('Please fill in all fields.');
+      setLoading(false);
+      return;
+    }
+
     try {
       // Simulated successful login
       const userData = { buyer: { email }, token: 'fake_buyer_token' };
-      dispatch(buyerLogin(userData)); // ✅ Dispatch Redux action
+      dispatch(buyerLogin(userData));
       navigate('/Dashboard');
     } catch (error) {
-      alert('Login failed.');
+      setError('Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="loginContainer">
-      <Card className="loginCard">
+    <div className="login-container">
+      <Card className="login-card">
         <CardBody>
-          <h3>Buyer Login</h3>
-          <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-          <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-          <Button onClick={handleLogin} disabled={loading}>
-            {loading ? 'Logging in...' : 'Login'}
+          <CardTitle tag="h3" className="text-center text-dark fw-bold mb-4">
+            Buyer Login
+          </CardTitle>
+          <CardText className="text-center text-muted mb-4">
+            Sign in to explore and purchase amazing products!
+          </CardText>
+
+          <Input
+            type="email"
+            placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="mb-3"
+          />
+          <Input
+            type="password"
+            placeholder="Enter your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="mb-3"
+          />
+
+          {error && <div className="text-danger text-center mb-3">{error}</div>}
+
+          <Button
+            color="primary"
+            className="w-100 fw-bold login-btn"
+            onClick={handleLogin}
+            disabled={loading}
+          >
+            {loading ? <Spinner size="sm" /> : 'Login'}
           </Button>
+
+          <div className="text-center mt-3">
+            <small>
+              Don't have an account?{' '}
+              <span
+                className="text-primary fw-bold"
+                style={{ cursor: 'pointer' }}
+                onClick={() => navigate('/buyerRegister')}
+              >
+                Sign up here
+              </span>
+            </small>
+          </div>
         </CardBody>
       </Card>
     </div>

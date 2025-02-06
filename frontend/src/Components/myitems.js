@@ -14,6 +14,7 @@ import {
   Spinner,
   Alert,
 } from 'reactstrap';
+import { useSelector } from 'react-redux';
 
 const MyItems = ({ loggedIn }) => {
   const navigate = useNavigate();
@@ -23,13 +24,17 @@ const MyItems = ({ loggedIn }) => {
   const [soldCount, setSoldCount] = useState(0);
   const [totalEarnings, setTotalEarnings] = useState(0);
   const [salesError, setSalesError] = useState(null);
+  const sellerAuth = useSelector((state)=> state.sellerAuth.loggedIn);
 
   // Redirect if not logged in
   useEffect(() => {
-    if (loggedIn === false) {
+    const User = JSON.parse(localStorage.getItem('user'));
+    console.log(User)
+    if (!User || !User.token || !sellerAuth) {
       navigate('/landing');
+      return
     }
-  }, [loggedIn, navigate]);
+  }, [navigate]);
 
   // Fetch products
   const fetchProducts = () => {

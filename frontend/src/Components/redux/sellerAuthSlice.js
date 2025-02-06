@@ -12,13 +12,13 @@ const sellerAuthSlice = createSlice({
       state.loggedIn = true;
       state.seller = action.payload.seller;
       state.token = action.payload.token;
-      localStorage.setItem('user', JSON.stringify(action.payload));
+     
     },
     sellerLogout: (state) => {
       state.loggedIn = false;
-      state.buyer = null;
+      state.seller = null;
       state.token = '';
-      localStorage.removeItem('user');
+      
     },
   },
 });

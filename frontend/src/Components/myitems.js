@@ -16,7 +16,7 @@ import {
 } from 'reactstrap';
 import { useSelector } from 'react-redux';
 
-const MyItems = ({ loggedIn }) => {
+const MyItems = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -28,13 +28,13 @@ const MyItems = ({ loggedIn }) => {
 
   // Redirect if not logged in
   useEffect(() => {
-    const User = JSON.parse(localStorage.getItem('user'));
-    console.log(User)
-    if (!User || !User.token || !sellerAuth) {
+    
+   // console.log(sellerAuth)
+    if (!sellerAuth) {
       navigate('/landing');
-      return
+      
     }
-  }, [navigate]);
+  }, [sellerAuth,navigate]);
 
   // Fetch products
   const fetchProducts = () => {

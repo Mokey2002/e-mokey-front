@@ -30,14 +30,13 @@ const BuyerDashboard = () => {
 
   // Check if buyer is logged in
   useEffect(() => {
-    const buyerUser = JSON.parse(localStorage.getItem('buyerUser'));
-    console.log(buyerUser)
-    if (!buyerUser || !buyerUser.token || !buyerAuth) {
+    
+    if (!buyerAuth) {
       navigate('/buyerLogin');
-      return;
+      
     }
-    setBuyerEmail(buyerUser.buyer.email);
-  }, [navigate]);
+   
+  }, [buyerAuth,navigate]);
 
   // Tab toggling
   const toggleTab = (tab) => {

@@ -12,22 +12,22 @@ import {
   Table,
 } from 'reactstrap';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
 
-const History = ({ loggedIn }) => {
+const History = () => {
   const navigate = useNavigate();
   const [soldItems, setSoldItems] = useState([]);
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertColor, setAlertColor] = useState('info');
+  const sellerAuth = useSelector((state)=> state.sellerAuth.loggedIn);
 
-  // Redirect if not logged in and fetch sold items
+   // Redirect if not logged in
   useEffect(() => {
-    if (!loggedIn) {
-      navigate('/landing');
-    } else {
-      fetchSoldItems();
-    }
-  }, [loggedIn, navigate]);
+      if (!sellerAuth) {
+        navigate('/login');
+      }
+    }, [sellerAuth,navigate])
 
   // Fetch sold items from a dummy API endpoint
   const fetchSoldItems = async () => {

@@ -15,19 +15,22 @@ import {
   Alert,
 } from 'reactstrap';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
+
 
 const AddItem = ({ loggedIn }) => {
   const navigate = useNavigate();
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertColor, setAlertColor] = useState('info');
+  const sellerAuth = useSelector((state) => state.sellerAuth.loggedIn);
 
   // Redirect if not logged in
-  useEffect(() => {
-    if (!loggedIn) {
-      navigate('/landing');
-    }
-  }, [loggedIn, navigate]);
+ useEffect(() => {
+     if (!sellerAuth) {
+       navigate('/login');
+     }
+   }, [sellerAuth,navigate])
 
   // Create refs for each input
   const itemNameRef = useRef(null);
@@ -66,9 +69,6 @@ const AddItem = ({ loggedIn }) => {
     }
   };
 
-  if (!loggedIn) {
-    return null; // Prevent rendering if not logged in
-  }
 
   return (
     <Container className="mt-5">

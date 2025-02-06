@@ -2,17 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
+import { useSelector } from 'react-redux';
 
-const EditItems = ({ loggedIn }) => {
+const EditItems = () => {
   // Retrieve productId from router state
   const { state } = useLocation();
   const navigate = useNavigate();
   const productId = state?.id;
-  useEffect(() => {
-    if (!loggedIn) {
-      navigate('/landing');
-    }
-  }, [loggedIn, navigate]);
+  const sellerAuth = useSelector((state)=> state.sellerAuth.loggedIn);
+  // Redirect if not logged in
+ useEffect(() => {
+     if (!sellerAuth) {
+       navigate('/login');
+     }
+   }, [sellerAuth,navigate])
   // Local state for form fields
   const [productData, setProductData] = useState({
     name: '',

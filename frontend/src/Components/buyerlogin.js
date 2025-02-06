@@ -15,13 +15,12 @@ const BuyerLogin = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+
   useEffect(() => {
-    const buyerUser = JSON.parse(localStorage.getItem('buyerUser'));
-    if (buyerUser && buyerUser.token) {
-      dispatch(buyerLogin(buyerUser));
+    if (buyerAuth) {
       navigate('/Dashboard');
     }
-  }, [dispatch, navigate]);
+  }, [buyerAuth, navigate]); // Trigger only when buyerAuth changes
 
   const handleLogin = async () => {
     setLoading(true);

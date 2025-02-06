@@ -11,6 +11,7 @@ import History from './Components/history';
 import BuyerLogin from './Components/buyerlogin';
 import BuyerDashboard from './Components/buyerDashboard';
 import BuyerRegister from './Components/buyerRegistration';
+import { persistor } from './Components/redux/store';
 
 // Redux
 import { useSelector, useDispatch } from 'react-redux';
@@ -62,32 +63,22 @@ function MainApp() {
   const toggle = () => setModal(!modal);
   const toggleNavbar = () => setCollapsed(!collapsed);
 
-  // Load login state from localStorage on app start
-  useEffect(() => {
-    const sellerUser = JSON.parse(localStorage.getItem('user'));
-    if (sellerUser && sellerUser.token) {
-      dispatch(sellerLogin(sellerUser));
-      //setSellerLoggedIn(true);
-      //setEmail(sellerUser.email);
-    }
-    console.log(sellerUser)
-    const buyerUser = JSON.parse(localStorage.getItem('buyerUser'));
-    if (buyerUser && buyerUser.token) {
-      dispatch(buyerLogin(buyerUser)); // Sync Redux state with localStorage
-    }
-    console.log(buyerUser)
-  }, [dispatch]);
 
   // Handle Logout for both Buyers & Sellers
   const handleLogout = () => {
     if (buyerLoggedIn) {
       dispatch(buyerLogout()); // Redux Logout for Buyers
-      localStorage.removeItem('buyerUser');
+      
     } else if (sellerLoggedIn) {
       dispatch(sellerLogout());
-      localStorage.removeItem('user');
+      
     }
-    navigate('/landing'); // Redirect after logout
+
+     // 🔥 Clear persisted Redux state
+ 
+    navigate('/landing'); // Redirect AFTER state is cleared
+  
+    //navigate('/landing'); // Redirect after logout
   };
 
   // Open the cart modal and fetch cart data

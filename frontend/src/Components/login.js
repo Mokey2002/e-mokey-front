@@ -15,12 +15,14 @@ const Login = () => {
   const sellerAuth = useSelector((state) => state.sellerAuth.loggedIn);
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user && user.token) {
-      dispatch(sellerLogin(user));
+
+    if (sellerAuth) {
+    
       navigate('/myItems');
     }
-  }, [dispatch, navigate]);
+
+  }, [sellerAuth,navigate])
+
 
   const onButtonClick = async () => {
     setLoading(true);

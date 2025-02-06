@@ -12,13 +12,13 @@ const buyerAuthSlice = createSlice({
       state.loggedIn = true;
       state.buyer = action.payload.buyer;
       state.token = action.payload.token;
-      localStorage.setItem('buyerUser', JSON.stringify(action.payload));
+     
     },
     buyerLogout: (state) => {
       state.loggedIn = false;
       state.buyer = null;
       state.token = '';
-      localStorage.removeItem('buyerUser');
+
     },
   },
 });

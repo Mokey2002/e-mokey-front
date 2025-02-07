@@ -94,7 +94,7 @@ const Landing = () => {
                   <span style={{ fontSize: '12px', color: '#999' }}> / unit</span>
                 </div>
                 <span style={{ fontSize: '14px', color: '#666' }}>
-                  Qty: {product.price}
+                  Qty: {product.quantity}
                 </span>
               </CardFooter>
             </Card>

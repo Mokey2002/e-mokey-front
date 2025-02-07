@@ -23,8 +23,9 @@ const Product = (props) => {
   const [quantity, setQuantity] = useState(1); // State to store selected quantity
 
   useEffect(() => {
+    console.log(location)
     axios
-      .get(`http://127.0.0.1:8000/api/product_id/${location.state.id}/`)
+      .get(`http://127.0.0.1:8000/api/product/${location.state.id}/`)
       .then((res) => {
         setProduct(res.data);
         setLoading(false);
@@ -89,7 +90,7 @@ const Product = (props) => {
         }}
       >
         <img
-          alt={product?.product_name}
+          alt={product?.name}
           src="https://picsum.photos/600/300"
           style={{
             width: '100%',
@@ -109,7 +110,7 @@ const Product = (props) => {
               marginBottom: '15px'
             }}
           >
-            {product?.product_name}
+            {product?.name}
           </CardTitle>
           <CardSubtitle
             tag="h6"
@@ -119,7 +120,7 @@ const Product = (props) => {
               fontSize: '16px'
             }}
           >
-            {product?.category || 'Category not specified'}
+            {product?.category.name || 'Category not specified'}
           </CardSubtitle>
           <CardText
             style={{
@@ -130,7 +131,7 @@ const Product = (props) => {
               marginBottom: '20px'
             }}
           >
-            {product?.product_description || 'No description available.'}
+            {product?.description || 'No description available.'}
           </CardText>
           <CardFooter
             style={{

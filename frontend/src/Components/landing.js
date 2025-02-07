@@ -71,10 +71,10 @@ const Landing = () => {
                   {product.name}
                 </CardTitle>
                 <CardSubtitle className="mb-2 text-muted" tag="h6">
-                  {product.name || 'Category not specified'}
+                  {product.category.name|| 'Category not specified'}
                 </CardSubtitle>
                 <CardText style={{ fontSize: '14px', color: '#666' }}>
-                  {product.description || 'No description available.'}
+                  {product.category.description || 'No description available.'}
                 </CardText>
               </CardBody>
               <CardFooter

@@ -20,8 +20,9 @@ const Landing = () => {
 
   useEffect(() => {
     axios
-      .get('http://127.0.0.1:8000/api/product/')
+      .get('http://127.0.0.1:8000/api/products/')
       .then((res) => {
+        console.log(res.data)
         setData(res.data);
       })
       .catch((err) => console.error('Error fetching data:', err));
@@ -40,9 +41,9 @@ const Landing = () => {
 
       <Row className="g-4">
         {Pdata.map((product) => (
-          <Col key={product.id} sm="6" md="4" lg="3">
+          <Col key={product.p_id} sm="6" md="4" lg="3">
             <Card
-              onClick={onButtonClick(product.id)}
+              onClick={onButtonClick(product.p_id)}
               style={{
                 border: 'none',
                 borderRadius: '10px',
@@ -70,10 +71,10 @@ const Landing = () => {
                   {product.name}
                 </CardTitle>
                 <CardSubtitle className="mb-2 text-muted" tag="h6">
-                  {product.category || 'Category not specified'}
+                  {product.name || 'Category not specified'}
                 </CardSubtitle>
                 <CardText style={{ fontSize: '14px', color: '#666' }}>
-                  {product.product_description || 'No description available.'}
+                  {product.description || 'No description available.'}
                 </CardText>
               </CardBody>
               <CardFooter
@@ -93,7 +94,7 @@ const Landing = () => {
                   <span style={{ fontSize: '12px', color: '#999' }}> / unit</span>
                 </div>
                 <span style={{ fontSize: '14px', color: '#666' }}>
-                  Qty: {product.quantity}
+                  Qty: {product.price}
                 </span>
               </CardFooter>
             </Card>

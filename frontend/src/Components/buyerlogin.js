@@ -15,10 +15,9 @@ const BuyerLogin = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-
   useEffect(() => {
     if (buyerAuth) {
-    //  navigate('/Dashboard');
+     navigate('/Dashboard');
     }
   }, [buyerAuth, navigate]); // Trigger only when buyerAuth changes
 
@@ -40,10 +39,10 @@ const BuyerLogin = () => {
       });
       if (response.status === 200) {
 
-        const { access, refresh } = response.data;
+        const { access, refresh } = response.data.data;
         
-        console.log(response);
-      const userData = { buyer: { email }, token: response.data.access };
+        console.log(response.data.data.user);
+      const userData = { buyer: { 'email':email,'name':response.data.data.user.name}, token: response.data.data.access};
       dispatch(buyerLogin(userData));
       //navigate('/Dashboard');
 

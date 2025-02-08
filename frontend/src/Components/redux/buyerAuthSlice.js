@@ -6,6 +6,7 @@ const buyerAuthSlice = createSlice({
     loggedIn: false,
     buyer: null,
     token: '',
+    
   },
   reducers: {
     buyerLogin: (state, action) => {

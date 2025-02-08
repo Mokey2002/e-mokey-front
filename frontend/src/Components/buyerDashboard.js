@@ -26,9 +26,11 @@ import CartWishlist from './dashboardFeatures/Wishlist';
 const BuyerDashboard = () => {
   const navigate = useNavigate();
   const [buyerEmail, setBuyerEmail] = useState('');
+  const [buyerName, setBuyerName] = useState('');
   const [activeTab, setActiveTab] = useState('1');
   const buyerAuth = useSelector((state) => state.buyerAuth.loggedIn);
   const { loggedIn, user, token } = useAuth();
+
   // Check if buyer is logged in
   useEffect(() => {
      console.log(loggedIn,user,token)
@@ -36,6 +38,7 @@ const BuyerDashboard = () => {
       navigate('/buyerLogin');
       
     }
+    //console.log(token)
 
     const fetchData = async () => {
       try {
@@ -46,7 +49,8 @@ const BuyerDashboard = () => {
         });
 
         if (response.status === 200) {
-          console.log('Data:', response.data);
+          console.log('Data:', response.data.data);
+          setBuyerName(response.data.data.name);
         }
       } catch (error) {
         console.error('Request failed:', error.response?.data || error.message);
@@ -55,7 +59,7 @@ const BuyerDashboard = () => {
 
     fetchData(); // ✅ Call the async function
    
-  }, [buyerAuth,navigate]);
+  }, [buyerAuth,navigate,buyerName]);
 
   // Tab toggling
   const toggleTab = (tab) => {
@@ -69,7 +73,7 @@ const BuyerDashboard = () => {
       {/* Header */}
       <Row className="mb-4">
         <Col>
-          <h2>Welcome, {buyerEmail}!</h2>
+          <h2>Welcome, {buyerName}!</h2>
           <p>Manage your shopping experience here.</p>
         </Col>
       </Row>

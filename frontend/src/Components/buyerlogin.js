@@ -18,7 +18,7 @@ const BuyerLogin = () => {
 
   useEffect(() => {
     if (buyerAuth) {
-      navigate('/Dashboard');
+    //  navigate('/Dashboard');
     }
   }, [buyerAuth, navigate]); // Trigger only when buyerAuth changes
 
@@ -34,9 +34,22 @@ const BuyerLogin = () => {
 
     try {
       // Simulated successful login
-      const userData = { buyer: { email }, token: 'fake_buyer_token' };
+      const response = await axios.post('http://127.0.0.1:8000/api/login/', {
+        email:email,
+        password:password,
+      });
+      if (response.status === 200) {
+
+        const { access, refresh } = response.data;
+        
+        console.log(response);
+      const userData = { buyer: { email }, token: response.data.access };
       dispatch(buyerLogin(userData));
-      navigate('/Dashboard');
+      //navigate('/Dashboard');
+
+      }
+
+
     } catch (error) {
       setError('Login failed. Please try again.');
     } finally {

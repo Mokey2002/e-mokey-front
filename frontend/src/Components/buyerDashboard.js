@@ -14,7 +14,8 @@ import {
 } from 'reactstrap';
 import classnames from 'classnames';
 import { useSelector } from 'react-redux';
-
+import axios from 'axios';
+import useAuth from './hooks/userAuth';
 // Import each feature component
 
 import Profile from './dashboardFeatures/BuyerProfile';
@@ -27,14 +28,32 @@ const BuyerDashboard = () => {
   const [buyerEmail, setBuyerEmail] = useState('');
   const [activeTab, setActiveTab] = useState('1');
   const buyerAuth = useSelector((state) => state.buyerAuth.loggedIn);
-
+  const { loggedIn, user, token } = useAuth();
   // Check if buyer is logged in
   useEffect(() => {
-    
+     console.log(loggedIn,user,token)
     if (!buyerAuth) {
       navigate('/buyerLogin');
       
     }
+
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://127.0.0.1:8000/api/customers/', {
+          headers: {
+            'Authorization': `Bearer ${token}`  // ✅ Correct Syntax
+          },
+        });
+
+        if (response.status === 200) {
+          console.log('Data:', response.data);
+        }
+      } catch (error) {
+        console.error('Request failed:', error.response?.data || error.message);
+      }
+    };
+
+    fetchData(); // ✅ Call the async function
    
   }, [buyerAuth,navigate]);
 

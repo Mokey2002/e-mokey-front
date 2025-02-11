@@ -12,6 +12,7 @@ import {
   CardFooter,
   Input
 } from 'reactstrap';
+import useAuth from './hooks/userAuth';
 
 const Product = (props) => {
   const navigate = useNavigate();
@@ -21,6 +22,8 @@ const Product = (props) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1); // State to store selected quantity
+  //gets user info
+  const { loggedIn, user, token } = useAuth();
 
   useEffect(() => {
     console.log(location)
@@ -45,22 +48,29 @@ const Product = (props) => {
   };
 
   const onButtonClick = () => {
-    console.log(product.id)
-    axios
-      .post('http://127.0.0.1:8000/api/cart/', {
-        user_id: '1',
-        product_id: product?.id,
-        quantity: quantity, // Send selected quantity
-        price: product?.price
-      })
-      .then(() => {
-        props.setCartIcon(false);
-        alert('Product added to cart!');
-      })
-      .catch((err) => {
-        console.error('Error adding product to cart:', err);
-        alert('Failed to add product to cart.');
-      });
+
+
+
+
+    try {
+      
+      const response = axios.post('http://127.0.0.1:8000/api/cart-items/', 
+        {
+          product_id: location.state.id,
+          quantity: quantity
+        }, 
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      console.log('Item added:', response.data);
+    } catch (error) {
+      console.error('Error adding item:', error);
+    }
+
+    
   };
 
   if (loading) {

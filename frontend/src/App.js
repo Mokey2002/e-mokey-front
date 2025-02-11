@@ -35,7 +35,7 @@ import {
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import axios from 'axios';
-
+import useAuth from './Components/hooks/userAuth';
 
 
 function App() {
@@ -62,7 +62,7 @@ function MainApp() {
 
   const toggle = () => setModal(!modal);
   const toggleNavbar = () => setCollapsed(!collapsed);
-
+  const { loggedIn, user, token } = useAuth();
 
   // Handle Logout for both Buyers & Sellers
   const handleLogout = () => {
@@ -84,36 +84,55 @@ function MainApp() {
   // Open the cart modal and fetch cart data
   const handleClick = () => {
     setModal(!modal);
-
+  
+    // Assuming you have the token saved in Redux or localStorage
+    //const token = localStorage.getItem('access_token'); // Replace with your actual token retrieval method
+  
     axios
-      .get('http://127.0.0.1:8000/api/cart/')
+      .get('http://127.0.0.1:8000/api/cart-items/', {  // Updated endpoint
+        headers: {
+          Authorization: `Bearer ${token}`,  // Add the token for authentication
+        },
+      })
       .then((res) => {
+        console.log(res.data)
         let total = 0;
         const listItems = res.data.map((item) => {
-          total += parseFloat(item.price) * item.quantity;
+          total += parseFloat(item.product.price) * item.quantity;
           return (
             <li key={item.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0' }}>
-              <span>{item.product_name} (x{item.quantity}) - ${item.price.toFixed(2)}</span>
+              <span>{item.product.name} (x{item.quantity}) - ${item.product.price}</span>
               <Button color="danger" size="sm" onClick={() => handleDelete(item.id)}>Delete</Button>
             </li>
           );
         });
-
+  
         setCart(listItems);
         setTotalPrice(total);
       })
       .catch((err) => console.error('Error fetching cart data:', err));
   };
+  
 
   // Delete an item from the cart
-  const handleDelete = (product_id) => {
+  const handleDelete = (product_id_oncart) => {
+
+    
     axios
-      .delete(`http://127.0.0.1:8000/api/delete_cart_product_id/${product_id}/`)
-      .then(() => {
-        console.log('Item deleted');
-        handleClick(); // Refresh cart after delete
-      })
-      .catch((err) => console.error('Error deleting product:', err));
+    .delete(`http://127.0.0.1:8000/api/delete_cart_item/`, {
+      headers: {
+        Authorization: `Bearer ${token}` // ✅ Correct template literal
+      },
+      data: {  // ✅ Data should be inside 'data' when using DELETE
+        product_id: product_id_oncart
+      }
+    })
+    .then(() => {
+      console.log('Item deleted');
+      handleClick(); // ✅ Refresh cart after delete
+    })
+    .catch((err) => console.error('Error deleting product:', err));
+
   };
 
   return (
@@ -196,7 +215,7 @@ function MainApp() {
         <ModalBody>
           <ul>{userCart}</ul>
           <hr />
-          <h5 style={{ textAlign: 'right' }}>Total: ${totalPrice.toFixed(2)}</h5>
+          <h5 style={{ textAlign: 'right' }}>Total: ${totalPrice}</h5>
         </ModalBody>
         <ModalFooter>
           <Button color="primary" onClick={() => navigate('/checkout')}>Checkout</Button>

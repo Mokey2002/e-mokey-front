@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'; 
 import { useNavigate } from 'react-router-dom';
+import useAuth from './hooks/userAuth';
 import axios from 'axios';
 import {
   Card,
@@ -17,12 +18,12 @@ import {
   Label
 } from 'reactstrap';
 
-const Checkout = ({ loggedIn }) => {
+const Checkout = () => {
   const navigate = useNavigate();
   const [cartData, setCartData] = useState([]);
   const [total, setTotal] = useState(0);
   const [showPayment, setShowPayment] = useState(false);
-
+  const { loggedIn, user, token } = useAuth();
   // Shipping address state
   const [shippingAddress, setShippingAddress] = useState({
     addressLine1: '',
@@ -36,8 +37,13 @@ const Checkout = ({ loggedIn }) => {
   // Fetch cart data from the server
   const fetchCartData = () => {
     axios
-      .get('http://127.0.0.1:8000/api/cart/')
+      .get('http://127.0.0.1:8000/api/cart-items/', {  // Updated endpoint
+        headers: {
+          Authorization: `Bearer ${token}`,  // Add the token for authentication
+        },
+      })
       .then((res) => {
+        console.log(res.data)
         setCartData(res.data);
       })
       .catch((err) => {
@@ -49,7 +55,7 @@ const Checkout = ({ loggedIn }) => {
   useEffect(() => {
     let newTotal = 0;
     cartData.forEach((item) => {
-      const price = parseFloat(item.price) || 0;
+      const price = parseFloat(item.product.price) || 0;
       newTotal += price * item.quantity;
     });
     setTotal(newTotal);
@@ -160,7 +166,7 @@ const Checkout = ({ loggedIn }) => {
                   tag="h6"
                   style={{ fontSize: '0.8rem' }}
                 >
-                  Price: ${item.price?.toFixed(2) ?? '0.00'}
+                  Price: ${item.product.price ?? '0.00'}
                 </CardSubtitle>
 
                 {/* Quantity & Subtotal */}
@@ -201,7 +207,7 @@ const Checkout = ({ loggedIn }) => {
                 >
                   <span style={{ fontWeight: 'bold', color: '#333', fontSize: '0.8rem' }}>
                     Subtotal: $
-                    {(parseFloat(item.price || 0) * parseFloat(item.quantity || 0)).toFixed(2)}
+                    {(parseFloat(item.product.price || 0) * parseFloat(item.quantity || 0)).toFixed(2)}
                   </span>
                   <Button
                     size="sm"

@@ -49,9 +49,6 @@ const Product = (props) => {
 
   const onButtonClick = () => {
 
-
-
-
     try {
       
       const response = axios.post('http://127.0.0.1:8000/api/cart-items/', 

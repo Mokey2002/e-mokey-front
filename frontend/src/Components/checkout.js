@@ -24,6 +24,7 @@ const Checkout = () => {
   const [total, setTotal] = useState(0);
   const [showPayment, setShowPayment] = useState(false);
   const { loggedIn, user, token } = useAuth();
+  const [cartid,setCartid]=useState('');
   // Shipping address state
   const [shippingAddress, setShippingAddress] = useState({
     addressLine1: '',
@@ -43,7 +44,9 @@ const Checkout = () => {
         },
       })
       .then((res) => {
-        console.log(res.data)
+        console.log(res.data);
+        console.log(res.data[0].cart);
+        setCartid(res.data[0].cart);
         setCartData(res.data);
       })
       .catch((err) => {
@@ -54,6 +57,7 @@ const Checkout = () => {
   // Calculate total whenever cartData changes
   useEffect(() => {
     let newTotal = 0;
+  
     cartData.forEach((item) => {
       const price = parseFloat(item.product.price) || 0;
       newTotal += price * item.quantity;
@@ -113,9 +117,29 @@ const Checkout = () => {
 
   // Handle final payment submission (this would normally include sending both shipping and payment details)
   const handlePaymentSubmit = (e) => {
-    e.preventDefault();
+   // e.preventDefault();
+
+    axios
+      .post('http://127.0.0.1:8000/api/orders/', 
+        {
+          order_amount: total.toFixed(2),
+          cart_id: cartid
+        }, 
+      {  
+      headers: {
+          Authorization: `Bearer ${token}`,  // Add the token for authentication
+        },
+      })
+      .then((res) => {
+        alert('Payment submitted!');
+        navigate('/confirmation');
+      })
+      .catch((err) => {
+        console.error('Error fetching cart data:', err);
+      });
     // Payment processing logic goes here.
-    alert('Payment submitted!');
+   
+    
   };
 
   return (

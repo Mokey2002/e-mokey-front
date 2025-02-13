@@ -116,31 +116,42 @@ const Checkout = () => {
   };
 
   // Handle final payment submission (this would normally include sending both shipping and payment details)
-  const handlePaymentSubmit = (e) => {
-   // e.preventDefault();
-
-    axios
-      .post('http://127.0.0.1:8000/api/orders/', 
+  const handlePaymentSubmit = async (event) => {
+    event.preventDefault();  // ✅ Prevent page refresh
+  
+    if (!cartid || !token) {
+      alert('Invalid cart or authentication error.');
+      return;
+    }
+  
+    try {
+      const res = await axios.post(
+        'http://127.0.0.1:8000/api/orders/', 
         {
-          order_amount: total.toFixed(2),
-          cart_id: cartid
+          order_amount: parseFloat(total).toFixed(2),
+          cart_id: parseInt(cartid),
         }, 
-      {  
-      headers: {
-          Authorization: `Bearer ${token}`,  // Add the token for authentication
-        },
-      })
-      .then((res) => {
-        alert('Payment submitted!');
-        navigate('/confirmation');
-      })
-      .catch((err) => {
-        console.error('Error fetching cart data:', err);
-      });
-    // Payment processing logic goes here.
-   
-    
+        {  
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+  
+      console.log('Payment Response:', res);
+  
+      if (res.status === 201) {  // ✅ Ensure the request was successful
+        alert('Payment submitted successfully!');
+        navigate('/confirmation');  // ✅ Navigate after successful payment
+      } else {
+        alert('Unexpected response from server.');
+      }
+    } catch (err) {
+      console.error('Error submitting payment:', err);
+      alert('Failed to process payment. Please try again.');
+    }
   };
+  
+  
+
 
   return (
     <div style={{ padding: '20px', backgroundColor: '#f9f9f9', minHeight: '100vh' }}>
@@ -380,7 +391,7 @@ const Checkout = () => {
             <h4 style={{ fontWeight: 'bold', marginBottom: '20px' }}>
               Payment Information
             </h4>
-            <Form onSubmit={handlePaymentSubmit}>
+            <Form>
               <FormGroup>
                 <Label for="cardNumber" style={{ fontSize: '0.9rem' }}>Card Number</Label>
                 <Input
@@ -422,7 +433,7 @@ const Checkout = () => {
                 />
               </FormGroup>
               <div className="text-end mt-3">
-                <Button type="submit" color="primary" style={{ marginRight: '10px', fontSize: '0.9rem' }}>
+                <Button type="submit" color="primary"  onClick={handlePaymentSubmit} style={{ marginRight: '10px', fontSize: '0.9rem' }}>
                   Submit Payment
                 </Button>
                 <Button color="secondary" onClick={() => navigate('/landing')} style={{ fontSize: '0.9rem' }}>

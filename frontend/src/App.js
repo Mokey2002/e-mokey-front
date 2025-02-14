@@ -220,7 +220,7 @@ function MainApp() {
           <h5 style={{ textAlign: 'right' }}>Total: ${totalPrice}</h5>
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" onClick={() => navigate('/checkout')}>Checkout</Button>
+          <Button color="primary" onClick={() =>  {setModal(!modal); navigate('/checkout')}}>Checkout</Button>
           <Button color="secondary" onClick={toggle}>Close</Button>
         </ModalFooter>
       </Modal>

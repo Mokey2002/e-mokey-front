@@ -16,18 +16,18 @@ import {
 } from 'reactstrap';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
+import sellerAuth from './hooks/sellerAuth';
 
-
-const AddItem = ({ loggedIn }) => {
+const AddItem = () => {
   const navigate = useNavigate();
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertColor, setAlertColor] = useState('info');
-  const sellerAuth = useSelector((state) => state.sellerAuth.loggedIn);
+  const { loggedIn, seller, token } = sellerAuth();
 
   // Redirect if not logged in
  useEffect(() => {
-     if (!sellerAuth) {
+     if (!loggedIn) {
        navigate('/login');
      }
    }, [sellerAuth,navigate])
@@ -38,22 +38,23 @@ const AddItem = ({ loggedIn }) => {
   const descriptionRef = useRef(null);
   const qtyRef = useRef(null);
   const itemIdRef = useRef(null);
-
+  
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = {
-      product_name: itemNameRef.current.value,
+      name: itemNameRef.current.value,
       price: priceRef.current.value,
-      product_description: descriptionRef.current.value,
+      description: descriptionRef.current.value,
       quantity: qtyRef.current.value,
-      product_id: itemIdRef.current.value,
+      category_id: itemIdRef.current.value,
     };
 
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/product/', formData, {
+      const response = await axios.post('http://127.0.0.1:8000/api/products_seller/', formData, {
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -107,16 +108,18 @@ const AddItem = ({ loggedIn }) => {
                   />
                 </FormGroup>
                 <FormGroup>
-                  <Label for="itemId">Item ID</Label>
-                  <Input
-                    id="itemId"
-                    name="itemId"
-                    placeholder="Enter item id"
-                    innerRef={itemIdRef}
-                    type="text"
-                    required
-                  />
-                </FormGroup>
+                <Label for="itemId">Category</Label>
+                <Input
+                  id="itemId"
+                  name="itemId"
+                  innerRef={itemIdRef}
+                  type="select" // Change input type to select
+                  required
+                >
+                  <option value="1">Electronics</option>
+                  <option value="2">Home Decor</option>
+                </Input>
+              </FormGroup>
                 <FormGroup>
                   <Label for="price">Price</Label>
                   <Input

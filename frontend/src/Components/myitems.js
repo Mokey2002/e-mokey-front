@@ -40,8 +40,9 @@ const MyItems = () => {
   const fetchProducts = () => {
     setLoading(true);
     axios
-      .get('http://127.0.0.1:8000/api/product/')
+      .get('http://127.0.0.1:8000/api/products_seller/')
       .then((res) => {
+        console.log(res)
         setProducts(res.data);
         setError(null);
       })

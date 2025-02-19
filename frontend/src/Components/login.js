@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { sellerLogin } from './redux/sellerAuthSlice';
 import { Button, Card, CardBody, CardTitle, CardText, Input, Spinner } from 'reactstrap';
+import axios from 'axios';
 
 const Login = () => {
   const [email, setLocalEmail] = useState('');
@@ -48,13 +49,27 @@ const Login = () => {
     }
 
     try {
-      // Simulated authentication request
-      const userData = { seller: { email }, token: 'fake_seller_token' };
+      // Simulated successful login
+      const response = await axios.post('http://127.0.0.1:8000/api/seller_login/', {
+        email:email,
+        password:password,
+      });
+      if (response.status === 200) {
+
+        const { access, refresh } = response.data.data;
+        
+        //console.log(response.data.data.user);
+        console.log(response)
+      const userData = { buyer: { 'email':email,'name':response.data.data.user.name}, token: response.data.data.access};
       dispatch(sellerLogin(userData));
-      navigate('/myItems');
+      //navigate('/Dashboard');
+
+      }
+
+
     } catch (error) {
-      console.error('Error during login:', error);
-      alert('Login failed. Please try again.');
+      console.log('error')
+      //setError('Login failed. Please try again.');
     } finally {
       setLoading(false);
     }

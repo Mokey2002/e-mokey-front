@@ -15,7 +15,6 @@ import {
   Alert,
 } from 'reactstrap';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
 import sellerAuth from './hooks/sellerAuth';
 
 const AddItem = () => {

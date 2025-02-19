@@ -14,8 +14,8 @@ import {
   Spinner,
   Alert,
 } from 'reactstrap';
-import { useSelector } from 'react-redux';
 
+import sellerAuth from './hooks/sellerAuth';
 const MyItems = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
@@ -24,13 +24,13 @@ const MyItems = () => {
   const [soldCount, setSoldCount] = useState(0);
   const [totalEarnings, setTotalEarnings] = useState(0);
   const [salesError, setSalesError] = useState(null);
-  const sellerAuth = useSelector((state)=> state.sellerAuth.loggedIn);
+  const { loggedIn, seller, token } = sellerAuth();
 
   // Redirect if not logged in
   useEffect(() => {
     
    // console.log(sellerAuth)
-    if (!sellerAuth) {
+    if (!loggedIn) {
       navigate('/landing');
       
     }
@@ -40,7 +40,13 @@ const MyItems = () => {
   const fetchProducts = () => {
     setLoading(true);
     axios
-      .get('http://127.0.0.1:8000/api/products_seller/')
+      .get('http://127.0.0.1:8000/api/products_seller/',  {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        }
+
+      })
       .then((res) => {
         console.log(res)
         setProducts(res.data);
@@ -143,7 +149,7 @@ const MyItems = () => {
       {/* Product List */}
       <Row className="g-3">
         {products.map((product) => (
-          <Col key={product.id} sm="6" md="4" lg="3">
+          <Col key={product.p_id} sm="6" md="4" lg="3">
             <Card
               style={{
                 border: 'none',
@@ -170,10 +176,10 @@ const MyItems = () => {
                   {product.name}
                 </CardTitle>
                 <CardSubtitle className="mb-2 text-muted" tag="h6" style={{ fontSize: '12px' }}>
-                  {product.category || 'Category not specified'}
+                  {product.category.c_id || 'Category not specified'}
                 </CardSubtitle>
                 <CardText style={{ fontSize: '12px', color: '#666' }}>
-                  {product.product_description || 'No description available.'}
+                  {product.description || 'No description available.'}
                 </CardText>
                 <CardText style={{ fontSize: '14px', fontWeight: 'bold', color: '#555' }}>
                   Quantity: {product.quantity ?? 'N/A'}

@@ -109,7 +109,7 @@ function MainApp() {
         });
   
         setCart(listItems);
-        setTotalPrice(total);
+        setTotalPrice(total.toFixed(2));
       })
       .catch((err) => console.error('Error fetching cart data:', err));
   };

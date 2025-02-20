@@ -1,52 +1,46 @@
-// src/components/dashboardFeatures/OrderHistory.js
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import useAuth from '../hooks/userAuth';
 
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { loggedIn, user, token } = useAuth();
+  const [items, setItems] = useState([]);
+  useEffect(() => {
+    const fetchOrderHistory = async () => {
+      setLoading(true);
+      setError('');
+
+      try {
+        const response = await axios.get('http://127.0.0.1:8000/api/orders/', {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          }
+        });
+
+        console.log('API Response:', response.data);
+
+        setOrders(Array.isArray(response.data.order) ? response.data.order : [response.data.order]);
+        setItems(response.data.items)
+      } catch (err) {
+        console.error('Error fetching order history:', err);
+        setError('Could not load order history.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrderHistory();
+  }, []); // ✅ Runs only once
 
   useEffect(() => {
-    fetchOrderHistory();
-  }, []);
-
-  const fetchOrderHistory = async () => {
-    setLoading(true);
-    setError('');
-
-    try {
-      // Example real API call:
-      // const buyerUser = JSON.parse(localStorage.getItem('buyerUser'));
-      // const response = await axios.get('http://127.0.0.1:8000/api/orderHistory', {
-      //   headers: { Authorization: `Bearer ${buyerUser.token}` }
-      // });
-      // setOrders(response.data.orders);
-
-      // Simulated data
-      const simulatedOrders = [
-        {
-          orderId: 'ABC123',
-          date: '2025-01-01',
-          items: ['Sample Product 1', 'Sample Product 2'],
-          total: 65.99
-        },
-        {
-          orderId: 'XYZ789',
-          date: '2025-01-10',
-          items: ['Sample Product 3'],
-          total: 29.99
-        }
-      ];
-      setOrders(simulatedOrders);
-    } catch (err) {
-      console.error('Error fetching order history:', err);
-      setError('Could not load order history.');
-    } finally {
-      setLoading(false);
+    if (orders.length > 0) {
+      console.log("Updated orders:", orders);
     }
-  };
+  }, [orders]); // ✅ Runs only when `orders` changes
 
   if (loading) {
     return <h5>Loading order history...</h5>;
@@ -65,11 +59,11 @@ const OrderHistory = () => {
       <h5>Your Order History</h5>
       <ul>
         {orders.map((order) => (
-          <li key={order.orderId} style={{ marginBottom: '15px' }}>
-            <strong>Order ID:</strong> {order.orderId} <br />
-            <strong>Date:</strong> {order.date} <br />
-            <strong>Items:</strong> {order.items.join(', ')} <br />
-            <strong>Total:</strong> ${order.total}
+          <li key={order.order_id} style={{ marginBottom: '15px' }}>
+            <strong>Order ID:</strong> {order.order_id} <br />
+            <strong>Date:</strong> {order.order_date} <br />
+            <strong>Items:</strong> {items.map(item => item.product.name).join(', ')} <br />
+            <strong>Total:</strong> ${order.order_amount}
           </li>
         ))}
       </ul>

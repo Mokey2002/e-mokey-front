@@ -40,7 +40,7 @@ const BuyerDashboard = () => {
     }
     //console.log(token)
 
-    const fetchData = async () => {
+    const fetchCustomerData = async () => {
       try {
         const response = await axios.get('http://127.0.0.1:8000/api/customers/', {
           headers: {
@@ -57,7 +57,8 @@ const BuyerDashboard = () => {
       }
     };
 
-    fetchData(); // ✅ Call the async function
+
+    fetchCustomerData(); // ✅ Call the async function
    
   }, [buyerAuth,navigate,buyerName]);
 

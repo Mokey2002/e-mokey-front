@@ -13,6 +13,7 @@ import BuyerDashboard from './Components/buyerDashboard';
 import BuyerRegister from './Components/buyerRegistration';
 import { persistor } from './Components/redux/store';
 import OrderConfirmation from './Components/OrderConfirmation';
+import Notifications from './Components/sellernotifiaction';
 
 // Redux
 import { useSelector, useDispatch } from 'react-redux';
@@ -208,6 +209,7 @@ function MainApp() {
           <Route path="/buyerRegister" element={<BuyerRegister />} />
           <Route path="/Dashboard" element={<BuyerDashboard />} />
           <Route path="/Confirmation" element={<OrderConfirmation />} />
+          <Route path="/Notification" element={<Notifications />}/>
         </Routes>
      
 

@@ -12,17 +12,19 @@ import {
   Row,
   Col,
   CardFooter,
+  Input,
 } from 'reactstrap';
 
 const Landing = () => {
   const navigate = useNavigate();
   const [Pdata, setData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState(''); // 🔍 New state
 
   useEffect(() => {
     axios
       .get('http://127.0.0.1:8000/api/products/')
       .then((res) => {
-        console.log(res.data)
+        console.log(res.data);
         setData(res.data);
       })
       .catch((err) => console.error('Error fetching data:', err));
@@ -32,15 +34,31 @@ const Landing = () => {
     navigate('/product', { state: { id: productId } });
   };
 
+  // 💡 Filter products based on the search term
+  const filteredData = Pdata.filter((product) =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div style={{ padding: '20px', backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
-      <div className="text-center mb-5">
+      <div className="text-center mb-4">
         <h1 style={{ fontWeight: 'bold', color: '#333' }}>Welcome!</h1>
         <p style={{ fontSize: '18px', color: '#666' }}>Explore our product catalog below.</p>
       </div>
 
+      {/* 🔍 Search Bar */}
+      <div className="mb-4 text-center">
+        <Input
+          type="text"
+          placeholder="Search products..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ maxWidth: '400px', margin: '0 auto' }}
+        />
+      </div>
+
       <Row className="g-4">
-        {Pdata.map((product) => (
+        {filteredData.map((product) => (
           <Col key={product.p_id} sm="6" md="4" lg="3">
             <Card
               onClick={onButtonClick(product.p_id)}
@@ -71,7 +89,7 @@ const Landing = () => {
                   {product.name}
                 </CardTitle>
                 <CardSubtitle className="mb-2 text-muted" tag="h6">
-                  {product.category.name|| 'Category not specified'}
+                  {product.category?.name || 'Category not specified'}
                 </CardSubtitle>
                 <CardText style={{ fontSize: '14px', color: '#666' }}>
                   {product.description || 'No description available.'}
@@ -88,14 +106,10 @@ const Landing = () => {
                 }}
               >
                 <div>
-                  <span style={{ fontWeight: 'bold', color: '#333' }}>
-                    ${product.price}
-                  </span>
+                  <span style={{ fontWeight: 'bold', color: '#333' }}>${product.price}</span>
                   <span style={{ fontSize: '12px', color: '#999' }}> / unit</span>
                 </div>
-                <span style={{ fontSize: '14px', color: '#666' }}>
-                  Qty: {product.quantity}
-                </span>
+                <span style={{ fontSize: '14px', color: '#666' }}>Qty: {product.quantity}</span>
               </CardFooter>
             </Card>
           </Col>

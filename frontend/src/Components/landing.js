@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 import {
-  Button,
+  Input,
   Card,
   CardBody,
   CardTitle,
@@ -12,32 +12,34 @@ import {
   Row,
   Col,
   CardFooter,
-  Input,
 } from 'reactstrap';
 
 const Landing = () => {
   const navigate = useNavigate();
   const [Pdata, setData] = useState([]);
-  const [searchTerm, setSearchTerm] = useState(''); // 🔍 New state
+  const [searchTerm, setSearchTerm] = useState('');
 
+  // 🔄 Fetch all products OR search products
   useEffect(() => {
-    axios
-      .get('http://127.0.0.1:8000/api/products/')
-      .then((res) => {
-        console.log(res.data);
+    const fetchProducts = async () => {
+      try {
+        const endpoint = searchTerm.trim()
+          ? `http://127.0.0.1:8000/api/products/search/?q=${searchTerm}`
+          : 'http://127.0.0.1:8000/api/products/';
+          
+        const res = await axios.get(endpoint);
         setData(res.data);
-      })
-      .catch((err) => console.error('Error fetching data:', err));
-  }, []);
+      } catch (err) {
+        console.error('Error fetching data:', err);
+      }
+    };
+
+    fetchProducts();
+  }, [searchTerm]);
 
   const onButtonClick = (productId) => () => {
     navigate('/product', { state: { id: productId } });
   };
-
-  // 💡 Filter products based on the search term
-  const filteredData = Pdata.filter((product) =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   return (
     <div style={{ padding: '20px', backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
@@ -58,7 +60,7 @@ const Landing = () => {
       </div>
 
       <Row className="g-4">
-        {filteredData.map((product) => (
+        {Pdata.map((product) => (
           <Col key={product.p_id} sm="6" md="4" lg="3">
             <Card
               onClick={onButtonClick(product.p_id)}

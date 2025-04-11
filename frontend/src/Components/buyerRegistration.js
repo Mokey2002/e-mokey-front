@@ -15,6 +15,7 @@ const BuyerRegister = () => {
 
   // Local state to store registration form data
   const [formState, setFormState] = useState({
+    username:'',
     email: '',
     password: '',
     confirmPassword: ''
@@ -31,10 +32,10 @@ const BuyerRegister = () => {
 
   // Handle form submission
   const handleSubmit = async () => {
-    const { email, password, confirmPassword } = formState;
+    const { username, email, password, confirmPassword } = formState;
 
     // Basic validation: check if fields are filled
-    if (!email || !password || !confirmPassword) {
+    if (!email || !password || !confirmPassword || !username) {
       setErrorMessage('Please fill in all fields.');
       return;
     }
@@ -47,16 +48,17 @@ const BuyerRegister = () => {
 
     try {
       // Example: Real API request (uncomment and adjust endpoint & payload)
-      // const response = await axios.post('http://127.0.0.1:8000/api/buyerRegister/', {
-      //   email,
-      //   password
-      // });
-      // if (response.data.success) {
-      //   alert('Account created successfully! You can now log in.');
-      //   navigate('/buyerLogin');
-      // } else {
-      //   setErrorMessage(response.data.message || 'Registration failed.');
-      // }
+      const response = await axios.post('http://127.0.0.1:8000/api/create_customer/', {
+         username,
+         email,
+         password
+       });
+       if (response.data.success) {
+         alert('Account created successfully! You can now log in.');
+         navigate('/buyerLogin');
+       } else {
+         setErrorMessage(response.data.message || 'Registration failed.');
+       }
 
       // Simulated success (remove this block when you use a real API):
       alert('Account created successfully! You can now log in.');
@@ -131,7 +133,19 @@ const BuyerRegister = () => {
               {errorMessage}
             </div>
           )}
-
+          <div style={{ marginBottom: '10px' }}>
+            <Input
+              type="text"
+              name="username"
+              value={formState.username}
+              placeholder="username"
+              onChange={handleChange}
+              style={{
+                marginBottom: '10px',
+                textAlign: 'center'
+              }}
+            />
+          </div>
           <div style={{ marginBottom: '10px' }}>
             <Input
               type="email"

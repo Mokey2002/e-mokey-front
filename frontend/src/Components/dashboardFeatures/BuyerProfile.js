@@ -3,11 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Button } from 'reactstrap';
+import useAuth from "../hooks/userAuth";
 
 const Profile = () => {
   const [profileInfo, setProfileInfo] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { token } = useAuth();
 
   useEffect(() => {
     fetchProfile();
@@ -20,17 +22,26 @@ const Profile = () => {
     try {
       // Example real API call:
       // const buyerUser = JSON.parse(localStorage.getItem('buyerUser'));
-      // const response = await axios.get('http://127.0.0.1:8000/api/buyerProfile', {
-      //   headers: { Authorization: `Bearer ${buyerUser.token}` }
-      // });
-      // setProfileInfo(response.data);
+       const response = await axios.get('http://127.0.0.1:8000/api/customers/', {
+         headers: { Authorization: `Bearer ${token}` }
+       });
+      // console.log(';;;')
+      // console.log(response.data)
+      // console.log(response.data.data)
+      // console.log(';;;')
+       setProfileInfo({
+        email: response.data.data.email,
+        username: response.data.data.username
+      
+      });
 
       // Simulated data
+      /*
       setProfileInfo({
         email: 'john.doe@example.com',
         firstName: 'John',
         lastName: 'Doe'
-      });
+      });*/
     } catch (err) {
       console.error('Error fetching profile:', err);
       setError('Could not load profile info.');
@@ -54,11 +65,9 @@ const Profile = () => {
         <strong>Email:</strong> {profileInfo.email}
       </p>
       <p>
-        <strong>First Name:</strong> {profileInfo.firstName}
+        <strong>Username:</strong> {profileInfo.username}
       </p>
-      <p>
-        <strong>Last Name:</strong> {profileInfo.lastName}
-      </p>
+
       {/* Add more fields or an edit form as needed */}
       <Button color="secondary">Edit Profile</Button>
     </div>

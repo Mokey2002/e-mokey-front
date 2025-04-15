@@ -50,7 +50,7 @@ const BuyerDashboard = () => {
 
         if (response.status === 200) {
           console.log('Data:', response.data.data);
-          setBuyerName(response.data.data.name);
+          setBuyerName(response.data.data.username);
         }
       } catch (error) {
         console.error('Request failed:', error.response?.data || error.message);

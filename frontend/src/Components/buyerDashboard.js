@@ -21,7 +21,7 @@ import useAuth from './hooks/userAuth';
 import Profile from './dashboardFeatures/BuyerProfile';
 import OrderHistory from './dashboardFeatures/OrderHistory';
 import Notifications from './dashboardFeatures/Notifications';
-import CartWishlist from './dashboardFeatures/Wishlist';
+
 
 const BuyerDashboard = () => {
   const navigate = useNavigate();
@@ -112,15 +112,6 @@ const BuyerDashboard = () => {
             </NavItem>
             <NavItem>
               <NavLink
-                className={classnames({ active: activeTab === '4' })}
-                style={{ cursor: 'pointer' }}
-                onClick={() => toggleTab('4')}
-              >
-                Cart / Wishlist
-              </NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink
                 className={classnames({ active: activeTab === '5' })}
                 style={{ cursor: 'pointer' }}
                 onClick={() => toggleTab('5')}
@@ -138,9 +129,6 @@ const BuyerDashboard = () => {
             </TabPane>
             <TabPane tabId="3">
               <Profile />
-            </TabPane>
-            <TabPane tabId="4">
-              <CartWishlist />
             </TabPane>
             <TabPane tabId="5">
               <Notifications />

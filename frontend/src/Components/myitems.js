@@ -16,6 +16,7 @@ import {
 } from 'reactstrap';
 
 import sellerAuth from './hooks/sellerAuth';
+
 const MyItems = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
@@ -24,31 +25,26 @@ const MyItems = () => {
   const [soldCount, setSoldCount] = useState(0);
   const [totalEarnings, setTotalEarnings] = useState(0);
   const [salesError, setSalesError] = useState(null);
+  const [notifications, setNotifications] = useState([]);
+  const [notificationsError, setNotificationsError] = useState(null);
   const { loggedIn, seller, token } = sellerAuth();
 
-  // Redirect if not logged in
   useEffect(() => {
-    
-   // console.log(sellerAuth)
     if (!loggedIn) {
       navigate('/landing');
-      
     }
-  }, [sellerAuth,navigate]);
+  }, [sellerAuth, navigate]);
 
-  // Fetch products
   const fetchProducts = () => {
     setLoading(true);
     axios
-      .get('http://127.0.0.1:8000/api/products_seller/',  {
+      .get('http://127.0.0.1:8000/api/products_seller/', {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
-        }
-
+        },
       })
       .then((res) => {
-        console.log(res)
         setProducts(res.data);
         setError(null);
       })
@@ -61,10 +57,14 @@ const MyItems = () => {
       });
   };
 
-  // Fetch sales data (items sold & earnings for the month)
   const fetchSalesData = () => {
     axios
-      .get('http://127.0.0.1:8000/api/sales/monthly')
+      .get('http://127.0.0.1:8000/api/sales/monthly', {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((res) => {
         setSoldCount(res.data.sold_count);
         setTotalEarnings(res.data.total_earnings);
@@ -76,18 +76,36 @@ const MyItems = () => {
       });
   };
 
+  const fetchNotifications = () => {
+    axios
+      .get('http://127.0.0.1:8000/api/notifications/', {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        setNotifications(res.data);
+        setNotificationsError(null);
+      })
+      .catch((err) => {
+        console.error('Error fetching notifications:', err);
+        setNotificationsError('Failed to load notifications.');
+      });
+  };
+
   useEffect(() => {
     fetchProducts();
     fetchSalesData();
+    fetchNotifications();
   }, []);
 
-  // Handle Delete
   const handleDelete = (productId) => () => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       axios
         .delete(`http://127.0.0.1:8000/api/product_id/${productId}/`)
         .then(() => {
-          fetchProducts(); // Refresh products
+          fetchProducts();
         })
         .catch((err) => {
           console.error('Error deleting product:', err);
@@ -96,7 +114,6 @@ const MyItems = () => {
     }
   };
 
-  // Handle navigation
   const handleView = (productId) => () => navigate('/product', { state: { id: productId, mode: 'view' } });
   const handleEdit = (productId) => () => navigate('/edititems', { state: { id: productId } });
   const handleAddProduct = () => navigate('/additem');
@@ -111,16 +128,8 @@ const MyItems = () => {
         </Button>
       </div>
 
-      {/* Sales Overview Section */}
-      <Card
-        style={{
-          padding: '20px',
-          marginBottom: '20px',
-          borderRadius: '8px',
-          boxShadow: '0 3px 5px rgba(0, 0, 0, 0.1)',
-          backgroundColor: '#ffffff',
-        }}
-      >
+      {/* Sales Overview */}
+      <Card style={{ padding: '20px', marginBottom: '20px', borderRadius: '8px', boxShadow: '0 3px 5px rgba(0,0,0,0.1)', backgroundColor: '#ffffff' }}>
         <CardBody className="text-center">
           <h5 style={{ fontWeight: 'bold', color: '#333' }}>Sales This Month</h5>
           {salesError ? (
@@ -132,6 +141,26 @@ const MyItems = () => {
                 Total Earnings: ${totalEarnings.toFixed(2)}
               </h4>
             </div>
+          )}
+        </CardBody>
+      </Card>
+
+      {/* Notifications Section */}
+      <Card style={{ padding: '20px', marginBottom: '20px', borderRadius: '8px', boxShadow: '0 3px 5px rgba(0,0,0,0.1)', backgroundColor: '#ffffff' }}>
+        <CardBody>
+          <h5 style={{ fontWeight: 'bold', color: '#333' }}>Notifications</h5>
+          {notificationsError ? (
+            <Alert color="danger">{notificationsError}</Alert>
+          ) : notifications.length === 0 ? (
+            <p style={{ color: '#777' }}>No new notifications.</p>
+          ) : (
+            <ul style={{ paddingLeft: '20px' }}>
+              {notifications.map((n, i) => (
+                <li key={i} style={{ marginBottom: '10px', color: '#555' }}>
+                  <strong>{n.title || 'Notification'}:</strong> {n.body}
+                </li>
+              ))}
+            </ul>
           )}
         </CardBody>
       </Card>
@@ -155,14 +184,14 @@ const MyItems = () => {
                 border: 'none',
                 borderRadius: '8px',
                 overflow: 'hidden',
-                boxShadow: '0 3px 5px rgba(0, 0, 0, 0.1)',
+                boxShadow: '0 3px 5px rgba(0,0,0,0.1)',
                 transition: 'transform 0.2s ease',
               }}
             >
               <div style={{ overflow: 'hidden', height: '150px' }}>
                 <img
                   alt={product.name}
-                  src={product.image_url || "https://picsum.photos/600/300"}
+                  src={product.image_url || 'https://picsum.photos/600/300'}
                   style={{
                     width: '100%',
                     height: '100%',
@@ -176,7 +205,7 @@ const MyItems = () => {
                   {product.name}
                 </CardTitle>
                 <CardSubtitle className="mb-2 text-muted" tag="h6" style={{ fontSize: '12px' }}>
-                  {product.category.c_id || 'Category not specified'}
+                  {product.category?.c_id || 'Category not specified'}
                 </CardSubtitle>
                 <CardText style={{ fontSize: '12px', color: '#666' }}>
                   {product.description || 'No description available.'}

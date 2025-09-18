@@ -68,11 +68,22 @@ function MainApp() {
 
   // Handle Logout for both Buyers & Sellers
   const handleLogout = () => {
+
     if (buyerLoggedIn) {
       dispatch(buyerLogout()); // Redux Logout for Buyers
       
     } else if (sellerLoggedIn) {
-      dispatch(sellerLogout());
+
+      axios.post('http://127.0.0.1:8000/api/logout/',{
+        headers:{
+          Authorization: 'Bearer ${token}', 
+        },
+      }).then((res)=>{
+        console.log('logout success'),
+        dispatch(sellerLogout());
+
+      })
+      
       
     }
 

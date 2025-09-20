@@ -82,6 +82,16 @@ function MainApp() {
         console.log('logout success'),
         dispatch(sellerLogout());
 
+      }).catch((err)=>{
+
+        if(err.response){
+          alert('logout failed')
+        }else if (err.request){
+          alert('no response from server')
+        }else{
+          alert(err.message);
+        }
+
       })
       
       

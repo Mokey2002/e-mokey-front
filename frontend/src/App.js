@@ -79,6 +79,15 @@ useEffect(() => {
 
     if (buyerLoggedIn) {
       //console.log('asdfas');
+      axios.post('http://127.0.0.1:8000/api/logout/', 
+        { refresh: state.buyerAuth.refresh },
+        {
+          headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${state.buyerAuth.token}`,
+        },
+       
+      }).catch(()=>{});
       dispatch(buyerLogout()); // Redux Logout for Buyers
       
     } else if (sellerLoggedIn) {

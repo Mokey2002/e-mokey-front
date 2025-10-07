@@ -42,7 +42,7 @@ const BuyerLogin = () => {
         const { access, refresh } = response.data.data;
         
         console.log(response.data.data.user);
-      const userData = { buyer: { 'email':email,'name':response.data.data.user.name}, token: response.data.data.access};
+      const userData = { buyer: { 'email':email,'name':response.data.data.user.name}, token: response.data.data.access, refresh:response.data.data.refresh};
       dispatch(buyerLogin(userData));
       //navigate('/Dashboard');
 

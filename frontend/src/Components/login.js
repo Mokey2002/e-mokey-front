@@ -60,7 +60,7 @@ const Login = () => {
         
         //console.log(response.data.data.user);
         console.log(response)
-      const userData = { buyer: { 'email':email,'name':response.data.data.user.name}, token: response.data.data.access};
+      const userData = { buyer: { 'email':email,'name':response.data.data.user.name}, token: response.data.data.access,refresh:response.data.data.refresh};
       dispatch(sellerLogin(userData));
       //navigate('/Dashboard');
 

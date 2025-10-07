@@ -6,6 +6,7 @@ const buyerAuthSlice = createSlice({
     loggedIn: false,
     buyer: null,
     token: '',
+    refresh:'',
     
   },
   reducers: {
@@ -13,12 +14,14 @@ const buyerAuthSlice = createSlice({
       state.loggedIn = true;
       state.buyer = action.payload.buyer;
       state.token = action.payload.token;
+      state.refresh=action.payload.refresh;
      
     },
     buyerLogout: (state) => {
       state.loggedIn = false;
       state.buyer = null;
       state.token = '';
+      state.refresh='';
 
     },
   },

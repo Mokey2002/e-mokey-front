@@ -66,10 +66,19 @@ function MainApp() {
   const toggleNavbar = () => setCollapsed(!collapsed);
   const { loggedIn, user, token } = useAuth();
 
+
+  const state = useSelector(s => s);
+useEffect(() => {
+  console.log('rehydrated store', state);
+  console.log('buyerLoggedIn', state.buyerAuth?.loggedIn, 'sellerLoggedIn', state.sellerAuth?.loggedIn);
+  console.log('token?', state.buyerAuth?.token || state.sellerAuth?.token, localStorage.getItem('access_token'));
+}, []);
+
   // Handle Logout for both Buyers & Sellers
   const handleLogout = () => {
 
     if (buyerLoggedIn) {
+      //console.log('asdfas');
       dispatch(buyerLogout()); // Redux Logout for Buyers
       
     } else if (sellerLoggedIn) {
@@ -79,7 +88,7 @@ function MainApp() {
           Authorization: 'Bearer ${token}', 
         },
       }).then((res)=>{
-        console.log('logout success'),
+        console.log('logout success');
         dispatch(sellerLogout());
 
       }).catch((err)=>{

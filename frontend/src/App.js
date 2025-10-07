@@ -83,31 +83,16 @@ useEffect(() => {
       
     } else if (sellerLoggedIn) {
 
-      axios.post('http://127.0.0.1:8000/api/logout/',{
-        headers:{
-          Authorization: 'Bearer ${token}', 
-        },
-      }).then((res)=>{
-        console.log('logout success');
-        dispatch(sellerLogout());
-
-      }).catch((err)=>{
-
-        if(err.response){
-          alert('logout failed')
-        }else if (err.request){
-          alert('no response from server')
-        }else{
-          alert(err.message);
-        }
-
-      })
-      
-      
+      dispatch(sellerLogout());
+       
     }
 
      // 🔥 Clear persisted Redux state
- 
+  // ✅ clear persisted redux & any manual tokens
+  try {
+     persistor.flush();
+     persistor.purge();
+  } catch {}
     navigate('/landing'); // Redirect AFTER state is cleared
   
     //navigate('/landing'); // Redirect after logout

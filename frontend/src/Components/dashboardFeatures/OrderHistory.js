@@ -12,13 +12,13 @@ import {
   Alert,
   Button,
 } from "reactstrap";
-import useAuth from "../hooks/userAuth";
+import useUserAuth from "../hooks/useUserAuth";
 
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const { token } = useAuth();
+  const { token } = useUserAuth();
   const [itemsByCart, setItemsByCart] = useState({}); // Store items by cart_id
 
   useEffect(() => {

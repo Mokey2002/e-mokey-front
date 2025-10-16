@@ -11,7 +11,7 @@ import {
   CardFooter,
   Input
 } from 'reactstrap';
-import useAuth from './hooks/userAuth';
+import useUserAuth from './hooks/useUserAuth';
 
 const Product = (props) => {
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ const Product = (props) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1);
-  const { loggedIn, user, token } = useAuth();
+  const { loggedIn, user, token } = useUserAuth();
 
   useEffect(() => {
     axios

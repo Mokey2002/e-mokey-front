@@ -15,21 +15,21 @@ import {
   Alert,
 } from 'reactstrap';
 import axios from 'axios';
-import sellerAuth from './hooks/sellerAuth';
+import useSellerAuth from './hooks/useSellerAuth';
 
 const AddItem = () => {
   const navigate = useNavigate();
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertColor, setAlertColor] = useState('info');
-  const { loggedIn, seller, token } = sellerAuth();
+  const { loggedIn, seller, token } = useSellerAuth();
 
   // Redirect if not logged in
  useEffect(() => {
      if (!loggedIn) {
        navigate('/login');
      }
-   }, [sellerAuth,navigate])
+   }, [useSellerAuth,navigate])
 
   // Create refs for each input
   const itemNameRef = useRef(null);

@@ -3,13 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Button } from 'reactstrap';
-import useAuth from "../hooks/userAuth";
+import useUserAuth from "../hooks/useUserAuth";
 
 const Profile = () => {
   const [profileInfo, setProfileInfo] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const { token } = useAuth();
+  const { token } = useUserAuth();
 
   useEffect(() => {
     fetchProfile();

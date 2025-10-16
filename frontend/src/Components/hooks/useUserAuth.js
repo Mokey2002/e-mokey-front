@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 
-const useAuth = () => {
+const useUserAuth = () => {
   const loggedIn = useSelector((state) => state.buyerAuth.loggedIn);
   const user = useSelector((state) => state.buyerAuth.user);
   const token = useSelector((state) => state.buyerAuth.token);
@@ -10,4 +10,4 @@ const useAuth = () => {
   return { loggedIn, user, token ,refresh};
 };
 
-export default useAuth;
+export default useUserAuth;

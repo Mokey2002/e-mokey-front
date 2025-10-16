@@ -37,7 +37,7 @@ import {
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import axios from 'axios';
-import useAuth from './Components/hooks/userAuth';
+import useUserAuth from './Components/hooks/useUserAuth';
 
 
 function App() {
@@ -64,7 +64,7 @@ function MainApp() {
 
   const toggle = () => setModal(!modal);
   const toggleNavbar = () => setCollapsed(!collapsed);
-  const { loggedIn, user, token } = useAuth();
+  const { loggedIn, user, token } = useUserAuth();
 
 
   const state = useSelector(s => s);
@@ -79,6 +79,7 @@ useEffect(() => {
 
     if (buyerLoggedIn) {
       //console.log('asdfas');
+
       axios.post('http://127.0.0.1:8000/api/logout/', 
         { refresh: state.buyerAuth.refresh },
         {

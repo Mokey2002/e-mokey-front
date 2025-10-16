@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'; 
 import { useNavigate } from 'react-router-dom';
-import useAuth from './hooks/userAuth';
+import useUserAuth from './hooks/useUserAuth';
 import axios from 'axios';
 import {
   Card,
@@ -23,7 +23,7 @@ const Checkout = () => {
   const [cartData, setCartData] = useState([]);
   const [total, setTotal] = useState(0);
   const [showPayment, setShowPayment] = useState(false);
-  const { loggedIn, user, token } = useAuth();
+  const { loggedIn, user, token } = useUserAuth();
   const [cartid,setCartid]=useState('');
   // Shipping address state
   const [shippingAddress, setShippingAddress] = useState({

@@ -15,7 +15,7 @@ import {
 import classnames from 'classnames';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
-import useAuth from './hooks/userAuth';
+import useUserAuth from './hooks/useUserAuth';
 // Import each feature component
 
 import Profile from './dashboardFeatures/BuyerProfile';
@@ -29,7 +29,7 @@ const BuyerDashboard = () => {
   const [buyerName, setBuyerName] = useState('');
   const [activeTab, setActiveTab] = useState('1');
   const buyerAuth = useSelector((state) => state.buyerAuth.loggedIn);
-  const { loggedIn, user, token } = useAuth();
+  const { loggedIn, user, token } = useUserAuth();
 
   // Check if buyer is logged in
   useEffect(() => {

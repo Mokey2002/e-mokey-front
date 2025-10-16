@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardBody, CardTitle, CardText, Button, Spinner, Alert, Table } from 'reactstrap';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import useAuth from './hooks/userAuth';
+import useUserAuth from './hooks/useUserAuth';
 
 const OrderConfirmation = () => {
   const navigate = useNavigate();
-  const { loggedIn, token } = useAuth();
+  const { loggedIn, token } = useUserAuth();
 
   // State variables
   const [confirmationInfo, setConfirmationInfo] = useState({

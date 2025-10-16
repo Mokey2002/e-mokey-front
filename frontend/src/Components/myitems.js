@@ -15,7 +15,7 @@ import {
   Alert,
 } from 'reactstrap';
 
-import sellerAuth from './hooks/sellerAuth';
+import useSellerAuth from './hooks/useSellerAuth';
 
 const MyItems = () => {
   const navigate = useNavigate();
@@ -27,13 +27,13 @@ const MyItems = () => {
   const [salesError, setSalesError] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [notificationsError, setNotificationsError] = useState(null);
-  const { loggedIn, seller, token } = sellerAuth();
+  const { loggedIn, seller, token } = useSellerAuth();
 
   useEffect(() => {
     if (!loggedIn) {
       navigate('/landing');
     }
-  }, [sellerAuth, navigate]);
+  }, [useSellerAuth, navigate]);
 
   const fetchProducts = () => {
     setLoading(true);
